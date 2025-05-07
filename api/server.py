@@ -33,6 +33,7 @@ async def analyze_url(request: AnalyzeRequest):
             "keywords_found": res.get("keywords_found"),
             "qna": res.get("qna"),
             "iocs_found": res.get("iocs_found"),
+            "mitre_attacks": res.get("mitre_attacks") or [],
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")

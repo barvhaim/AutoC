@@ -1,6 +1,8 @@
 # dev
 python-dotenv
 black
+scikit-learn
+joblib
 
 # core
 diskcache
@@ -15,6 +17,9 @@ beautifulsoup4
 pyyaml
 websockets
 pytesseract
+torch
+transformers
+huggingface_hub
 
 # consumption
 fastapi

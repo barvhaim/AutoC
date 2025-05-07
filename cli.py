@@ -90,6 +90,32 @@ def _display_results(console: Console, res: dict, url: str):
     else:
         console.print("No IoCs found\n")
 
+    # MITRE  Classification
+    mitre_ttp = res.get("mitre_ttp", [])
+    if mitre_ttp is None:
+        return
+    mitre_text = Text(f"\n🎯 MITRE TTPs ({len(mitre_ttp)})\n", style="bold yellow")
+    console.print(mitre_text)
+
+    if mitre_ttp:
+        table = Table(show_header=True, header_style="bold magenta")
+        table.add_column("ID", style="cyan")
+        table.add_column("Name", style="white")
+        table.add_column("Max Confidence", style="green", justify="right")
+        table.add_column("URL", style="blue", overflow="fold")
+
+        for ttp in mitre_ttp:
+            confidence = f"{ttp.get('confidence', 0):.3f}"
+            table.add_row(
+                ttp["id"],
+                ttp["name"],
+                confidence,
+                ttp["url"],
+            )
+
+        console.print(table)
+    else:
+        console.print("No MITRE TTPs detected\n")
 
 @click.group()
 def cli():

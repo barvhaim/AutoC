@@ -8,12 +8,14 @@ from backend.pipeline.node_types import (
     KEYWORDS_EXTRACTOR_NODE,
     QNA_EXTRACTOR_NODE,
     IOCS_EXTRACTOR_NODE,
+    MITRE_CLASSIFIER_NODE,
 )
 from backend.parsers.html_parser import HTMLParser
 from backend.extractors.keywords_extractor import KeywordsExtractor
 from backend.extractors.qna_extractor import QnaExtractor
 from backend.extractors.iocs_extractor import IOCsExtractor
 from backend.enrichment.enrich_iocs import EnrichIOCs
+from backend.extractors.mitre_classifier_extractor import mitreClassifierExtractor
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -113,6 +115,35 @@ def iocs_extractor_node(state: PipelineState) -> Command:
     enriched_iocs = iocs_enrichment.enrich_iocs()
 
     return Command(
-        goto=END,
+        goto=MITRE_CLASSIFIER_NODE,
         update={"iocs_found": enriched_iocs},
     )
+
+def mitre_ttp_classifier_node(state: PipelineState) -> Command:
+    model_path = os.getenv("API_MITRE_TTP")
+    if not model_path:
+        return Command(
+            goto=END,
+           update={"mitre_ttp": None},
+        )
+    article_textual_content = state.get("article_textual_content")
+    qna = state.get("qna", [])
+    if not article_textual_content:
+        return Command(goto=END, update={"mitre_ttp": []})
+    try:
+        extractor = mitreClassifierExtractor(
+            article_content=article_textual_content,
+            model_repo=model_path,
+            qna=qna
+        )
+        mitre_ttp = extractor.classify()
+
+    except Exception as e:
+        logger.error(e)
+        mitre_ttp = None
+
+    return Command(
+        goto=END,
+        update={"mitre_ttp": mitre_ttp},
+    )
+
