@@ -8,7 +8,7 @@ from huggingface_hub import hf_hub_download
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
-class mitreClassifierExtractor:
+class MitreTTPClassifierExtractor:
     def __init__(
         self,
         article_content: str,
@@ -27,19 +27,29 @@ class mitreClassifierExtractor:
 
         self.tokenizer = BertTokenizer.from_pretrained(self.model_path)
 
-        config_path = hf_hub_download(repo_id=model_repo, filename="config.json", local_dir=self.cache_dir)
+        config_path = hf_hub_download(
+            repo_id=model_repo, filename="config.json", local_dir=self.cache_dir
+        )
         with open(config_path, "r", encoding="utf-8") as f:
             config = json.load(f)
             self.max_tokens = config.get("max_position_embeddings", 512)
 
-        scripted_model_path = hf_hub_download(repo_id=model_repo, filename="model_scripted.pt", local_dir=self.cache_dir)
+        scripted_model_path = hf_hub_download(
+            repo_id=model_repo, filename="model_scripted.pt", local_dir=self.cache_dir
+        )
         self.model = torch.jit.load(scripted_model_path).to(self.device)
         self.model.eval()
 
-        label_binarizer_path = hf_hub_download(repo_id=model_repo, filename="label_binarizer.pkl", local_dir=self.cache_dir)
+        label_binarizer_path = hf_hub_download(
+            repo_id=model_repo, filename="label_binarizer.pkl", local_dir=self.cache_dir
+        )
         self.mlb = joblib.load(label_binarizer_path)
 
-        mitre_json_path = hf_hub_download(repo_id=model_repo, filename="enterprise-attack.json", local_dir=self.cache_dir)
+        mitre_json_path = hf_hub_download(
+            repo_id=model_repo,
+            filename="enterprise-attack.json",
+            local_dir=self.cache_dir,
+        )
         self.mitre_map = self._load_mitre_map(mitre_json_path)
 
     def _load_mitre_map(self, json_path: str):
@@ -50,17 +60,22 @@ class mitreClassifierExtractor:
         for obj in data["objects"]:
             if obj.get("type") == "attack-pattern":
                 for ref in obj.get("external_references", []):
-                    if ref.get("source_name") == "mitre-attack" and "external_id" in ref:
+                    if (
+                        ref.get("source_name") == "mitre-attack"
+                        and "external_id" in ref
+                    ):
                         mapping[ref["external_id"]] = {
                             "name": obj.get("name", "Unknown"),
-                            "url": ref.get("url", "")
+                            "url": ref.get("url", ""),
                         }
         return mapping
 
     def classify(self):
-        chunks = []
         # 1. Split article into chunks
-        if len(self.tokenizer.encode(self.article_content, add_special_tokens=False)) > self.max_tokens:
+        if (
+            len(self.tokenizer.encode(self.article_content, add_special_tokens=False))
+            > self.max_tokens
+        ):
             chunks = self._split_text_into_chunks(self.article_content)
         else:
             chunks = [self.article_content]
@@ -69,21 +84,35 @@ class mitreClassifierExtractor:
         for item in self.qna:
             answer = item.get("answer", "").strip()
             if answer:
-                if len(self.tokenizer.encode(answer, add_special_tokens=False)) > self.max_tokens:
+                if (
+                    len(self.tokenizer.encode(answer, add_special_tokens=False))
+                    > self.max_tokens
+                ):
                     chunks.extend(self._split_text_into_chunks(answer))
                 else:
                     chunks.append(answer)
 
         # 3. Predict for each chunk
         from collections import defaultdict
+
         all_preds = defaultdict(list)
 
         for chunk in chunks:
-            inputs = self.tokenizer(chunk, return_tensors="pt", padding=True, truncation=True, max_length=self.max_tokens)
+            inputs = self.tokenizer(
+                chunk,
+                return_tensors="pt",
+                padding=True,
+                truncation=True,
+                max_length=self.max_tokens,
+            )
             inputs = {k: v.to(self.device) for k, v in inputs.items()}
 
             with torch.no_grad():
-                logits = self.model(inputs["input_ids"], inputs.get("attention_mask"), inputs.get("token_type_ids"))
+                logits = self.model(
+                    inputs["input_ids"],
+                    inputs.get("attention_mask"),
+                    inputs.get("token_type_ids"),
+                )
                 probs = torch.sigmoid(logits).cpu().numpy()[0]
 
             for idx, prob in enumerate(probs):
@@ -92,22 +121,20 @@ class mitreClassifierExtractor:
                     all_preds[label].append(prob)
 
         # 4. Sort by max confidence
-        sorted_preds = sorted(
-            all_preds.items(),
-            key=lambda x: max(x[1]),
-            reverse=True
-        )
+        sorted_preds = sorted(all_preds.items(), key=lambda x: max(x[1]), reverse=True)
 
         # 5. Prepare results with max confidence
         results = []
         for tid, confidences in sorted_preds:
             info = self.mitre_map.get(tid, {"name": "Unknown Technique", "url": ""})
-            results.append({
-                "id": tid,
-                "name": info["name"],
-                "confidence": round(max(confidences), 4),
-                "url": info["url"]
-            })
+            results.append(
+                {
+                    "id": tid,
+                    "name": info["name"],
+                    "confidence": round(max(confidences), 4),
+                    "url": info["url"],
+                }
+            )
 
         return results
 
@@ -120,7 +147,7 @@ class mitreClassifierExtractor:
             chunk_size=self.max_tokens,
             chunk_overlap=stride,
             separators=["\n\n", "\n", ".", " "],
-            length_function=count_tokens
+            length_function=count_tokens,
         )
 
         chunks = splitter.split_text(text)
@@ -130,9 +157,5 @@ class mitreClassifierExtractor:
         results = []
         for tid in technique_ids:
             info = self.mitre_map.get(tid, {"name": "Unknown Technique", "url": ""})
-            results.append({
-                "id": tid,
-                "name": info["name"],
-                "url": info["url"]
-            })
+            results.append({"id": tid, "name": info["name"], "url": info["url"]})
         return results

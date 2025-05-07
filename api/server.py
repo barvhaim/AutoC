@@ -15,16 +15,14 @@ frontend_path = Path(__file__).parent / "../frontend/dist"
 
 v1_router = APIRouter(prefix="/api/v1")
 
-# TODO - 1. API to analyze Text
-# TODO - 2. Override configuration in request or pre-defined
-# TODO - 3. APIs for each node (Q&A, keywords, IoCs, question)
-#
 
 @v1_router.post("/analyze")
 async def analyze_url(request: AnalyzeRequest):
     url = str(request.url)
     keywords = request.keywords if request.keywords is not None else []
-    analyst_questions = request.analyst_questions if request.analyst_questions is not None else []
+    analyst_questions = (
+        request.analyst_questions if request.analyst_questions is not None else []
+    )
 
     try:
         res = run(url=url, keywords=keywords, analyst_questions=analyst_questions)
@@ -33,7 +31,7 @@ async def analyze_url(request: AnalyzeRequest):
             "keywords_found": res.get("keywords_found"),
             "qna": res.get("qna"),
             "iocs_found": res.get("iocs_found"),
-            "mitre_attacks": res.get("mitre_attacks") or [],
+            "mitre_ttps": res.get("mitre_ttps"),
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
@@ -43,10 +41,14 @@ async def analyze_url(request: AnalyzeRequest):
 async def ping(request: AnalyzeRequest):
     url = str(request.url)
     keywords = request.keywords if request.keywords is not None else []
-    analyst_questions = request.analyst_questions if request.analyst_questions is not None else []
+    analyst_questions = (
+        request.analyst_questions if request.analyst_questions is not None else []
+    )
 
     try:
-        res = run(url=url, ping=True, keywords=keywords, analyst_questions=analyst_questions)
+        res = run(
+            url=url, ping=True, keywords=keywords, analyst_questions=analyst_questions
+        )
         return {
             "url": url,
             "keywords_found": res.get("keywords_found"),

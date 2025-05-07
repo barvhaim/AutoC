@@ -20,6 +20,7 @@ def analyze_security_blog(url: str) -> str:
         keywords = res.get("keywords_found")
         qna = res.get("qna")
         iocs = res.get("iocs_found")
+        mitre_ttps = res.get("mitre_ttps")
 
         # Keywords
         output += f"\n🔍 DETECTED Keywords ({len(keywords)})\n"
@@ -44,6 +45,16 @@ def analyze_security_blog(url: str) -> str:
                 output += f"Type: {ioc['type']}, Value: {ioc['value']}\n"
         else:
             output += "No IoCs found\n"
+
+        # MITRE ATT&CK TTPs Classification
+        if mitre_ttps is not None:
+            output += f"\n🧑‍💻 MITRE TTPs ({len(mitre_ttps)})\n"
+            if mitre_ttps:
+                for ttp in mitre_ttps:
+                    output += f"ID: {ttp['id']}, Name: {ttp['name']}, URL: {ttp['url']}\n"
+            else:
+                output += "No MITRE TTPs found\n"
+
         return output
 
     except Exception as e:

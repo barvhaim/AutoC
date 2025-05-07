@@ -12,7 +12,7 @@ from backend.pipeline.node_types import (
     KEYWORDS_EXTRACTOR_NODE,
     QNA_EXTRACTOR_NODE,
     IOCS_EXTRACTOR_NODE,
-    MITRE_CLASSIFIER_NODE,
+    MITRE_TTP_CLASSIFIER_NODE,
 )
 
 
@@ -23,7 +23,7 @@ def build_graph():
     flow.add_node(KEYWORDS_EXTRACTOR_NODE, keywords_extractor_node)
     flow.add_node(QNA_EXTRACTOR_NODE, qna_extractor_node)
     flow.add_node(IOCS_EXTRACTOR_NODE, iocs_extractor_node)
-    flow.add_node(MITRE_CLASSIFIER_NODE, mitre_ttp_classifier_node)
+    flow.add_node(MITRE_TTP_CLASSIFIER_NODE, mitre_ttp_classifier_node)
 
     flow.set_entry_point(HTML_EXTRACTOR_NODE)
 
