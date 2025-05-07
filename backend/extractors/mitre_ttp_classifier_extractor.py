@@ -131,7 +131,7 @@ class MitreTTPClassifierExtractor:
                 {
                     "id": tid,
                     "name": info["name"],
-                    "confidence": round(max(confidences), 4),
+                    "confidence": round(float(max(confidences)), 4),
                     "url": info["url"],
                 }
             )
