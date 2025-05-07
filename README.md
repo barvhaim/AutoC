@@ -15,16 +15,25 @@
 ### 📦 Installation
 
 1. Install Python 3.11 or later. (https://www.python.org/downloads/)
-2. Clone the project repository and navigate to the project directory.
+2. Install `uv` package manager (https://docs.astral.sh/uv/getting-started/installation/)
+   - For Linux and MacOS, you can use the following command:
+      ```bash
+      curl -LsSf https://astral.sh/uv/install.sh | sh
+      ```
+   - For Windows, you can use the following command:
+      ```bash
+      powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+      ```
+3. Clone the project repository and navigate to the project directory.
     ```bash
    git clone https://github.com/barvhaim/AutoC.git
    cd AutoC
     ```
-3. Install the required Python packages using pip.
+4. Install the required Python packages using `uv`.
     ```bash
-   pip install -r requirements.txt
+    uv sync
     ```
-4. Set up API keys by adding them to the `.env` file (Use `.env.example` file as a template).
+5. Set up API keys by adding them to the `.env` file (Use `.env.example` file as a template).
    You can use either of multiple LLM providers (IBM WatsonX, OpenAI), you will configure which one to use in the next step.
     ```bash
    cp .env.example .env
@@ -32,15 +41,15 @@
 
 ### 🔑 **Configuration**
 Supported LLM providers:
-- RITS ("rits")
 - WatsonX ("watsonx") [Get API Key](docs/getting_watsonx_api_key.md)
-- OpenAI ("openai") - Not tested yet
+- OpenAI ("openai") - TBD
+- RITS ("rits")
 
 ### 📝 **Usage**
 Run the AutoC tool with the following command:
 ```bash
-python cli.py extract --help (to see the available options)
-python cli.py extract --url <blog_post_url>
+uv run python cli.py extract --help (to see the available options)
+uv run python cli.py extract --url <blog_post_url>
 ```
 
 <img width="800" alt="Image" src="https://github.com/user-attachments/assets/664295f2-9ed6-4121-a12a-847402e27fe3" />
@@ -69,7 +78,7 @@ npm run build
 Once the build is complete, you can run the app using the following command from the root directory:
 ```bash
 cd ..
-python -m uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
+uv run python -m uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 One the app is up and running, you can access it at [http://localhost:8000](http://localhost:8000)
 
@@ -78,7 +87,7 @@ For development purposes, you can run the app in development mode using the foll
 
 Start the backend server:
 ```bash
-python -m uvicorn main:app --reload
+uv run python -m uvicorn main:app --reload
 ```
 and in a separate terminal, start the frontend development server:
 ```bash
@@ -95,8 +104,12 @@ Once the app is up and running, you can access it at [http://localhost:5173](htt
 
 <img width="800" alt="Image" src="https://github.com/user-attachments/assets/489b02cf-9a06-4613-8b8e-fc2f16f33782" />
 
+Make sure you have Claude Desktop installed, `uv` package manager and Python installed on your machine.
+Clone the project repository and navigate to the project directory.
+
+Install the required Python packages using `uv`.
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 Edit claude desktop config file and add the following lines to the `mcpServers` section:
