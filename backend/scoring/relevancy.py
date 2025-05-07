@@ -34,10 +34,12 @@ def calculate_relevancy_score(qna: List[Dict], keywords: List[str]) -> float:
     relevancy_score = keywords_score + answers_score
     return round(relevancy_score, 2)
 
+
 def get_positive_qna(qna: List[Dict]) -> List[Dict]:
     # TODO: improve initial implementation
     positive_answers = [
-        qa for qa in qna
+        qa
+        for qa in qna
         if qa["answer"]
         and (
             qa["answer"].strip().lower().startswith("yes")
@@ -47,7 +49,7 @@ def get_positive_qna(qna: List[Dict]) -> List[Dict]:
             )
         )
     ]
-    
+
     return positive_answers
 
 

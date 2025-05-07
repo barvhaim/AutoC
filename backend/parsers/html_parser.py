@@ -31,17 +31,20 @@ class HTMLParser:
         img = None
 
         # Load image from URL
-        if image_src.startswith('http'):
+        if image_src.startswith("http"):
             response = requests.get(image_src)
-            if response.status_code == 200 and 'image' in response.headers.get('Content-Type', ''):
+            if response.status_code == 200 and "image" in response.headers.get(
+                "Content-Type", ""
+            ):
                 img = Image.open(BytesIO(response.content))
             else:
-                content_type = response.headers.get('Content-Type')
+                content_type = response.headers.get("Content-Type")
                 logger.info(
-                    f"Skipped: {image_src} (status: {response.status_code}, content-type: {content_type})")
+                    f"Skipped: {image_src} (status: {response.status_code}, content-type: {content_type})"
+                )
 
         # Load from base64 (optional enhancement)
-        elif image_src.startswith('data:image'):
+        elif image_src.startswith("data:image"):
             base64_data = image_src.split(",")[1]
             img = Image.open(BytesIO(base64.b64decode(base64_data)))
 
@@ -64,20 +67,20 @@ class HTMLParser:
 
     @staticmethod
     def _extract_image_src(picture_tag, html_type: str) -> str:
-        if html_type == 'picture_tag':
-            source_tag = picture_tag.find('source')
-            if source_tag and source_tag.get('srcset'):
-                return source_tag.get('srcset').split(' ')[0]
+        if html_type == "picture_tag":
+            source_tag = picture_tag.find("source")
+            if source_tag and source_tag.get("srcset"):
+                return source_tag.get("srcset").split(" ")[0]
         else:
-            return picture_tag.get('src')
+            return picture_tag.get("src")
 
     def _extract_text_from_images_in_html(self, soup_obj: BeautifulSoup) -> str:
         res = []
-        img_tags = soup_obj.find_all('img')
-        picture_tags = soup_obj.find_all('picture')
+        img_tags = soup_obj.find_all("img")
+        picture_tags = soup_obj.find_all("picture")
         combined_tags = chain(
-            zip(picture_tags, ['picture_tag'] * len(picture_tags)),
-            zip(img_tags, ['image_tag'] * len(img_tags))
+            zip(picture_tags, ["picture_tag"] * len(picture_tags)),
+            zip(img_tags, ["image_tag"] * len(img_tags)),
         )
         for i, (tag, html_type) in enumerate(combined_tags):
             src = self._extract_image_src(tag, html_type)
@@ -90,7 +93,7 @@ class HTMLParser:
                 res.append(text)
             except Exception as e:
                 logger.info(f"Failed to process image {i} ({src}): {e}")
-        return ''.join(res)
+        return "".join(res)
 
     @staticmethod
     def _extract_article_content_from_markdown(markdown: str) -> str:
@@ -146,7 +149,9 @@ class HTMLParser:
             image_text_str = self._extract_text_from_images_in_html(soup)
             return image_text_str.strip()
         except Exception as e:
-            logger.warning(f"Failed to extract text from images using BeautifulSoup: {e}")
+            logger.warning(
+                f"Failed to extract text from images using BeautifulSoup: {e}"
+            )
 
     def _extract_textual_content_with_beautifulsoup(self) -> Optional[str]:
         logger.info("Attempting to extract HTML data using BeautifulSoup")
