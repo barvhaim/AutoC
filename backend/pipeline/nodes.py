@@ -8,12 +8,16 @@ from backend.pipeline.node_types import (
     KEYWORDS_EXTRACTOR_NODE,
     QNA_EXTRACTOR_NODE,
     IOCS_EXTRACTOR_NODE,
+    MITRE_TTP_CLASSIFIER_NODE,
 )
 from backend.parsers.html_parser import HTMLParser
 from backend.extractors.keywords_extractor import KeywordsExtractor
 from backend.extractors.qna_extractor import QnaExtractor
 from backend.extractors.iocs_extractor import IOCsExtractor
 from backend.enrichment.enrich_iocs import EnrichIOCs
+from backend.extractors.mitre_ttp_classifier_extractor import (
+    MitreTTPClassifierExtractor,
+)
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -26,7 +30,9 @@ def html_extractor_node(state: PipelineState) -> Command:
         return Command(goto=END, update={"error": "No blog URL provided"})
 
     logger.info(f"Extracting content from {url}")
-    parser = HTMLParser(url=url, use_ocr=os.getenv("ANALYZE_BLOG_IMAGES", 'false') == 'true')
+    parser = HTMLParser(
+        url=url, use_ocr=os.getenv("ANALYZE_BLOG_IMAGES", "false") == "true"
+    )
     article_textual_content = parser.get_textual_content()
 
     return Command(
@@ -41,11 +47,13 @@ def keywords_extractor_node(state: PipelineState) -> Command:
     if not article_textual_content:
         logger.error("No article content provided")
         return Command(goto=END, update={"error": "No article content provided"})
-    
+
     settings = state.get("settings", {})
     keywords = settings.get("keywords")
     logger.info(f"Extracting keywords from article content")
-    extractor = KeywordsExtractor(article_content=article_textual_content, keywords=keywords)
+    extractor = KeywordsExtractor(
+        article_content=article_textual_content, keywords=keywords
+    )
     keywords_found = extractor.find_keywords_in_text()
 
     if not keywords_found:
@@ -72,12 +80,14 @@ def qna_extractor_node(state: PipelineState) -> Command:
         return Command(
             goto=IOCS_EXTRACTOR_NODE,
         )
-    
+
     settings = state.get("settings", {})
     analyst_questions = settings.get("analyst_questions")
 
     logger.info(f"QnA extraction from article content")
-    extractor = QnaExtractor(article_content=article_textual_content, analyst_questions=analyst_questions)
+    extractor = QnaExtractor(
+        article_content=article_textual_content, analyst_questions=analyst_questions
+    )
     qna = extractor.qna_over_article()
 
     if not qna:
@@ -113,6 +123,35 @@ def iocs_extractor_node(state: PipelineState) -> Command:
     enriched_iocs = iocs_enrichment.enrich_iocs()
 
     return Command(
-        goto=END,
+        goto=MITRE_TTP_CLASSIFIER_NODE,
         update={"iocs_found": enriched_iocs},
+    )
+
+
+def mitre_ttp_classifier_node(state: PipelineState) -> Command:
+    model_path = os.getenv("DETECT_MITRE_TTPS_MODEL_PATH")
+    mitre_ttps = None
+    if not model_path:
+        return Command(
+            goto=END,
+            update={"mitre_ttps": None},
+        )
+    article_textual_content = state.get("article_textual_content")
+    qna = state.get("qna", [])
+    if not article_textual_content:
+        logger.error("No content provided")
+        return Command(goto=END, update={"mitre_ttps": []})
+    try:
+        logger.info("Classifying content for MITRE TTPS")
+        extractor = MitreTTPClassifierExtractor(
+            article_content=article_textual_content, model_repo=model_path, qna=qna
+        )
+        mitre_ttps = extractor.classify()
+
+    except Exception as e:
+        logger.error(f"Failed to classify content for MITRE TTPS: {e}")
+
+    return Command(
+        goto=END,
+        update={"mitre_ttps": mitre_ttps},
     )

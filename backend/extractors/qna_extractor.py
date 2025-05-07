@@ -17,7 +17,9 @@ load_dotenv()
 class QnaExtractor:
     def __init__(self, article_content: str, analyst_questions: List[str] = []):
         self.article_content = article_content
-        self.analyst_questions = analyst_questions if analyst_questions else self._load_analyst_questions()
+        self.analyst_questions = (
+            analyst_questions if analyst_questions else self._load_analyst_questions()
+        )
         self.prompts = get_prompts()
         self.llm = self._llm()
 
