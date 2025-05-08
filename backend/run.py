@@ -45,8 +45,6 @@ def run(
     iocs = res.get("iocs_found", [])
     mitre_ttps = res.get("mitre_ttps")
 
-    logger.info(f"MITRE TTPs found: {str(mitre_ttps)}")
-
     if ping:
         positive_qna = get_positive_qna(qna=qna)
         return {

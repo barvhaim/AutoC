@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 from fastapi import FastAPI, APIRouter, HTTPException
 from fastapi.staticfiles import StaticFiles
+from fastapi.concurrency import run_in_threadpool
 from api.data_models import AnalyzeRequest
 from backend.run import run
 
@@ -25,7 +26,9 @@ async def analyze_url(request: AnalyzeRequest):
     )
 
     try:
-        res = run(url=url, keywords=keywords, analyst_questions=analyst_questions)
+        res = await run_in_threadpool(
+            run, url=url, keywords=keywords, analyst_questions=analyst_questions
+        )
         return {
             "url": url,
             "keywords_found": res.get("keywords_found"),
