@@ -19,15 +19,20 @@ v1_router = APIRouter(prefix="/api/v1")
 
 @v1_router.post("/analyze")
 async def analyze_url(request: AnalyzeRequest):
-    url = str(request.url)
+    url = str(request.url) if request.url else None
     keywords = request.keywords if request.keywords is not None else []
     analyst_questions = (
         request.analyst_questions if request.analyst_questions is not None else []
     )
+    raw_text = request.raw_text if request.raw_text else None
 
     try:
         res = await run_in_threadpool(
-            run, url=url, keywords=keywords, analyst_questions=analyst_questions
+            run,
+            url=url,
+            keywords=keywords,
+            analyst_questions=analyst_questions,
+            raw_text=raw_text,
         )
         return {
             "url": url,
@@ -47,10 +52,15 @@ async def ping(request: AnalyzeRequest):
     analyst_questions = (
         request.analyst_questions if request.analyst_questions is not None else []
     )
+    raw_text = request.raw_text if request.raw_text else None
 
     try:
         res = run(
-            url=url, ping=True, keywords=keywords, analyst_questions=analyst_questions
+            url=url,
+            ping=True,
+            keywords=keywords,
+            analyst_questions=analyst_questions,
+            raw_text=raw_text,
         )
         return {
             "url": url,
