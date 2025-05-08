@@ -32,7 +32,7 @@ class HTMLParser:
 
         # Load image from URL
         if image_src.startswith("http"):
-            response = requests.get(image_src)
+            response = requests.get(image_src, timeout=10)
             if response.status_code == 200 and "image" in response.headers.get(
                 "Content-Type", ""
             ):
@@ -49,7 +49,7 @@ class HTMLParser:
             img = Image.open(BytesIO(base64.b64decode(base64_data)))
 
         elif len(self._overlap_with_base_url(image_src)) > 0:
-            response = requests.get(urljoin(self.url, image_src))
+            response = requests.get(urljoin(self.url, image_src), timeout=10)
             img = Image.open(BytesIO(response.content))
         else:
             logger.info(f"Unsupported image src format: {image_src}")
@@ -105,7 +105,7 @@ class HTMLParser:
         return markdown
 
     def _manually_fetch_blog_html_content(self) -> str:
-        response = requests.get(self.url, headers=self.headers)
+        response = requests.get(self.url, headers=self.headers, timeout=10)
         response.raise_for_status()
         soup = BeautifulSoup(response.content, "html.parser")
 
@@ -142,7 +142,7 @@ class HTMLParser:
     def _fetch_ocr_data_with_beautifulsoup(self) -> Optional[str]:
         logger.info("Attempting to extract text from images using BeautifulSoup")
         try:
-            response = requests.get(self.url, headers=self.headers)
+            response = requests.get(self.url, headers=self.headers, timeout=10)
             response.raise_for_status()
             soup = BeautifulSoup(response.content, "html.parser")
 
@@ -152,6 +152,7 @@ class HTMLParser:
             logger.warning(
                 f"Failed to extract text from images using BeautifulSoup: {e}"
             )
+            return None
 
     def _extract_textual_content_with_beautifulsoup(self) -> Optional[str]:
         logger.info("Attempting to extract HTML data using BeautifulSoup")
