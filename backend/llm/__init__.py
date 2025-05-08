@@ -105,3 +105,4 @@ def get_chat_llm_client(
 
     elif LLM_PROVIDER == LLMProviderType.OLLAMA:
         raise ValueError("Ollama is not supported yet")
+    return None
