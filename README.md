@@ -8,12 +8,24 @@
 
 - **Threat Intelligence Parsing**: Parses blogs, reports, and feeds from various OSINT sources.
 - **IoC Extraction**: Automatically extracts IoCs such as IP addresses, domains, file hashes, and more.
-- **Visualization**: Display extracted IoCs and analysis in a user-friendly interface. (Experimental)
+- **Visualization**: Display extracted IoCs and analysis in a user-friendly interface.
 
 ## **Getting Started**
 
-### 📦 Installation
+### 🚀 Quick Start
+Fastest way to get started with AutoC is to run it using Docker (with `docker-compose`).
 
+_Make sure to set up the `.env` file with your API keys before running the app (See [Configuration](#-configuration) section below for more details)._
+
+```bash
+git clone https://github.com/barvhaim/AutoC.git
+cd AutoC
+docker-compose up --build
+```
+Once the app is up and running, you can access it at [http://localhost:8000](http://localhost:8000)
+
+
+### 📦 Installation
 1. Install Python 3.11 or later. (https://www.python.org/downloads/)
 2. Install `uv` package manager (https://docs.astral.sh/uv/getting-started/installation/)
    - For Linux and MacOS, you can use the following command:
@@ -33,17 +45,26 @@
     ```bash
     uv sync
     ```
-5. Set up API keys by adding them to the `.env` file (Use `.env.example` file as a template).
-   You can use either of multiple LLM providers (IBM WatsonX, OpenAI), you will configure which one to use in the next step.
-    ```bash
-   cp .env.example .env
-    ```
+5. Configure the `.env` file with your API keys (See [Configuration](#-configuration) section below for more details).
 
 ### 🔑 **Configuration**
-Supported LLM providers:
-- WatsonX ("watsonx") [Get API Key](docs/getting_watsonx_api_key.md)
+Set up API keys by adding them to the `.env` file (Use `.env.example` file as a template).
+You can use either of multiple LLM providers (IBM WatsonX, OpenAI), you will configure which one to use in the next step.
+```bash
+cp .env.example .env
+```
+
+#### Supported LLM providers:
+- watsonx.ai by IBM ("watsonx") [Get API Key](docs/getting_watsonx_api_key.md)
 - OpenAI ("openai") - TBD
-- RITS ("rits")
+- RITS internal IBM ("rits") 
+
+#### Suggested models by provider:
+| Provider (LLM_PROVIDER)     | Models                                                                                                              |
+|-----------------------------|---------------------------------------------------------------------------------------------------------------------|
+| watsonx.ai by IBM (watsonx) | - `meta-llama/llama-3-3-70b-instruct` <br/>-`ibm-granite/granite-3.1-8b-instruct`                                   | 
+| RITS (rits)                 | - `meta-llama/llama-3-3-70b-instruct` <br/>- `ibm-granite/granite-3.1-8b-instruct` <br/> -`deepseek-ai/DeepSeek-V3` |
+| OpenAI (openai)             | TBD                                                                                                                 |
 
 ### 📝 **Usage**
 Run the AutoC tool with the following command:
@@ -54,20 +75,14 @@ uv run python cli.py extract --url <blog_post_url>
 
 <img width="800" alt="Image" src="https://github.com/user-attachments/assets/664295f2-9ed6-4121-a12a-847402e27fe3" />
 
-## 🚀 Bonus - Try our UI (Experimental)
+## 🧑‍💻 Bonus - Try our UI
 <img width="800" alt="Image" src="https://github.com/user-attachments/assets/aedf3614-78ef-438e-8db5-e7398f88fc6c" />
 
 ### 🏃Up and running options:
 Assuming the app `.env` file is configured correctly, you can run the app using one of the following options:
 
-#### Docker (Recommended)
-```bash
-docker-compose up --build
-```
-Once the app is up and running, you can access it at [http://localhost:8000](http://localhost:8000)
-
-### Local
-For running the app locally, you'll need `node` and `npm` installed on your machine. We recommend using [nvm](https://github.com/nvm-sh/nvm) for managing node versions.
+### Running the app
+For running the app locally, you'll need `node` 20 and `npm` installed on your machine. We recommend using [nvm](https://github.com/nvm-sh/nvm) for managing node versions.
 ```bash
 cd frontend
 nvm use
