@@ -1,8 +1,6 @@
 # AutoC Frontend
 
-## 🚀 Bonus - Try our UI (Experimental)
-
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/8bef5a7c-3d85-4480-b72d-5decc711d18d" />
+<img width="800" alt="Image" src="https://github.com/user-attachments/assets/aedf3614-78ef-438e-8db5-e7398f88fc6c" />
 
 ### Up and running options:
 
@@ -31,7 +29,7 @@ Once the build is complete, you can run the app using the following command from
 
 ```bash
 cd ..
-python -m uvicorn main:app --host 0.0.0.0 --port 8000
+uv run python -m uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
 One the app is up and running, you can access it at [http://localhost:8000](http://localhost:8000)
@@ -43,7 +41,7 @@ For development purposes, you can run the app in development mode using the foll
 Start the backend server:
 
 ```bash
-python -m uvicorn main:app --reload
+uv run python -m uvicorn main:app --reload
 ```
 
 and in a separate terminal, start the frontend development server:
@@ -52,6 +50,7 @@ and in a separate terminal, start the frontend development server:
 cd frontend
 nvm use
 npm install
+npm run build
 npm run dev
 ```
 
