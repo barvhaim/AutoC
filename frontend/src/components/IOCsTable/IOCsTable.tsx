@@ -91,7 +91,7 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
             onClick={exportToCSV}
             iconDescription="Export to CSV"
             kind="primary"
-            size="sm"
+            size="lg"
           >
             Export CSV
           </Button>
