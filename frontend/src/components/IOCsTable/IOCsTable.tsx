@@ -27,7 +27,7 @@ interface IOCsTableProps {
 
 const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
   const [filterValue, setFilterValue] = useState("");
-  
+
   const parsedIocs = iocs.map((ioc, index) => ({
     id: `${index}-${ioc.type}-${ioc.value}`,
     type: ioc.type,
@@ -39,14 +39,14 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
     const headers = ["Type", "Value"];
     const csvContent = [
       headers.join(","),
-      ...iocs.map(ioc => `"${ioc.type}","${ioc.value}"`)
+      ...iocs.map((ioc) => `"${ioc.type}","${ioc.value}"`),
     ].join("\n");
-    
+
     // Create blob and download link
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    
+
     // Set up and trigger download
     link.setAttribute("href", url);
     link.setAttribute("download", "iocs_export.csv");
@@ -56,29 +56,37 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
     document.body.removeChild(link);
   };
 
-  const handleSearch = (event: "" | React.ChangeEvent<HTMLInputElement>, value?: string) => {
+  const handleSearch = (
+    event: "" | React.ChangeEvent<HTMLInputElement>,
+    value?: string,
+  ) => {
     // Use the provided value if available, otherwise get it from the event
-    const searchValue = typeof value === 'string' 
-      ? value 
-      : (event !== "" ? event.target.value : "");
-    
+    const searchValue =
+      typeof value === "string"
+        ? value
+        : event !== ""
+          ? event.target.value
+          : "";
+
     setFilterValue(searchValue);
   };
 
   // Filter rows based on search input
-  const filteredRows = filterValue.trim() === "" 
-    ? parsedIocs 
-    : parsedIocs.filter(ioc => 
-        ioc.type.toLowerCase().includes(filterValue.toLowerCase()) || 
-        ioc.value.toLowerCase().includes(filterValue.toLowerCase())
-      );
+  const filteredRows =
+    filterValue.trim() === ""
+      ? parsedIocs
+      : parsedIocs.filter(
+          (ioc) =>
+            ioc.type.toLowerCase().includes(filterValue.toLowerCase()) ||
+            ioc.value.toLowerCase().includes(filterValue.toLowerCase()),
+        );
 
   return (
     <TableContainer>
       <TableToolbar>
         <TableToolbarContent>
           <TableToolbarSearch onChange={handleSearch} />
-          <Button 
+          <Button
             renderIcon={Download}
             onClick={exportToCSV}
             iconDescription="Export to CSV"
@@ -101,7 +109,7 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
             <TableHead>
               <TableRow>
                 {headers.map((header) => (
-                  <TableHeader 
+                  <TableHeader
                     {...getHeaderProps({ header, isSortable: true })}
                   >
                     {header.header}

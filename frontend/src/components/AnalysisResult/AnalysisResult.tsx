@@ -3,8 +3,9 @@ import { Row, Column } from "@carbon/react";
 import KeywordsCloud from "../KeywordsCloud/KeywordsCloud.tsx";
 import QnA from "../QnA/QnA.tsx";
 import IOCsTable from "../IOCsTable/IOCsTable.tsx";
-import styles from "./AnalysisResult.module.scss";
 import IOCsTypeChart from "../IOCsTypeChart/IOCsTypeChart.tsx";
+import MitreTTPs from "../MitreTTPs/MitreTTPs.tsx";
+import styles from "./AnalysisResult.module.scss";
 
 interface AnalysisResultProps {
   analysisResult: any;
@@ -14,6 +15,7 @@ const AnalysisResult: React.FC<AnalysisResultProps> = ({ analysisResult }) => {
   const iocs = analysisResult?.iocs || [];
   const keywords = analysisResult?.keywords || [];
   const qna = analysisResult?.qna || [];
+  const mitreTTPs = analysisResult?.mitre_ttps;
 
   return (
     <div className={styles.analysis_result_container}>
@@ -61,6 +63,20 @@ const AnalysisResult: React.FC<AnalysisResultProps> = ({ analysisResult }) => {
               </div>
             </Column>
           </Row>
+          {mitreTTPs !== null && (
+            <Row style={{ margin: 0 }}>
+              <Column>
+                <div className={styles.card_container}>
+                  <div className={styles.card_content}>
+                    <div className={styles.card_title}>
+                      🧑‍💻 Related MITRE ATT&CK TTPs ({mitreTTPs.length})
+                    </div>
+                    <MitreTTPs mitreTTPs={mitreTTPs} />
+                  </div>
+                </div>
+              </Column>
+            </Row>
+          )}
           <Row style={{ margin: 0 }}>
             <Column>
               <div className={styles.card_container}>
