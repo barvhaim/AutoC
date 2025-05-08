@@ -11,6 +11,8 @@
     @include type.type-style("label-01");
     background: linear-gradient(135deg, #0f62fe 0%, #673ab7 100%);
     transition: background 0.3s ease-in-out;
+    margin-right: layout.$spacing-03;
+
     color: colors.$white;
   }
 }

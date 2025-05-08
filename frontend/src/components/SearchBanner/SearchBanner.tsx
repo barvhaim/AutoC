@@ -25,6 +25,7 @@ const SearchBanner = () => {
             keywords: response.data?.keywords_found,
             qna: response.data?.qna,
             iocs: response.data?.iocs_found,
+            mitre_ttps: response.data?.mitre_ttps,
           }),
         );
       }
