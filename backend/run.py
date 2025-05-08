@@ -15,6 +15,7 @@ def run(
     ping: bool = False,
     keywords: List[str] = [],
     analyst_questions: List[str] = [],
+    raw_text: Optional[str] = None,
 ) -> Any:
     graph = build_graph()
     inputs = {
@@ -24,7 +25,7 @@ def run(
             "keywords": keywords,
             "analyst_questions": analyst_questions,
         },
-        "article_textual_content": None,
+        "article_textual_content": raw_text,
         "qna": [],
         "keywords_found": [],
         "iocs_found": [],

@@ -24,6 +24,10 @@ logger = logging.getLogger(__name__)
 
 
 def html_extractor_node(state: PipelineState) -> Command:
+    if state.get("article_textual_content"):
+        logger.info("Article content already extracted, skipping HTML extraction")
+        return Command(goto=KEYWORDS_EXTRACTOR_NODE)
+
     url = state.get("url")
     if not url:
         logger.error("No blog URL provided")
