@@ -27,7 +27,7 @@ interface IOCsTableProps {
 
 const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
   const [filterValue, setFilterValue] = useState("");
-  
+
   const parsedIocs = iocs.map((ioc, index) => ({
     id: `${index}-${ioc.type}-${ioc.value}`,
     type: ioc.type,
@@ -41,12 +41,12 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
       headers.join(","),
       ...iocs.map(ioc => `"${ioc.type}","${ioc.value}"`)
     ].join("\n");
-    
+
     // Create blob and download link
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    
+
     // Set up and trigger download
     link.setAttribute("href", url);
     link.setAttribute("download", "iocs_export.csv");
@@ -58,27 +58,29 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
 
   const handleSearch = (event: "" | React.ChangeEvent<HTMLInputElement>, value?: string) => {
     // Use the provided value if available, otherwise get it from the event
-    const searchValue = typeof value === 'string' 
-      ? value 
+    const searchValue = typeof value === 'string'
+      ? value
       : (event !== "" ? event.target.value : "");
-    
+
     setFilterValue(searchValue);
   };
 
   // Filter rows based on search input
-  const filteredRows = filterValue.trim() === "" 
-    ? parsedIocs 
-    : parsedIocs.filter(ioc => 
-        ioc.type.toLowerCase().includes(filterValue.toLowerCase()) || 
-        ioc.value.toLowerCase().includes(filterValue.toLowerCase())
-      );
+  const filteredRows = filterValue.trim() === ""
+    ? parsedIocs
+    : parsedIocs.filter(ioc =>
+      ioc.type.toLowerCase().includes(filterValue.toLowerCase()) ||
+      ioc.value.toLowerCase().includes(filterValue.toLowerCase())
+    );
+
+  const [hoverRowId, setHoverRowId] = useState<string | null>(null);
 
   return (
     <TableContainer>
       <TableToolbar>
         <TableToolbarContent>
           <TableToolbarSearch onChange={handleSearch} />
-          <Button 
+          <Button
             renderIcon={Download}
             onClick={exportToCSV}
             iconDescription="Export to CSV"
@@ -94,6 +96,7 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
         headers={[
           { key: "type", header: "Type" },
           { key: "value", header: "Value" },
+          { key: "actions", header: "VirusTotal" },
         ]}
       >
         {({ rows, headers, getHeaderProps, getTableProps }) => (
@@ -101,7 +104,7 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
             <TableHead>
               <TableRow>
                 {headers.map((header) => (
-                  <TableHeader 
+                  <TableHeader
                     {...getHeaderProps({ header, isSortable: true })}
                   >
                     {header.header}
@@ -112,12 +115,46 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
             <TableBody>
               {rows.map((row) => (
                 <TableRow key={row.id}>
+
                   <TableCell>
                     <Tag>{row.cells[0].value}</Tag>
                   </TableCell>
                   <TableCell style={{ fontFamily: "monospace" }}>
                     {row.cells[1].value}
                   </TableCell>
+
+                  <TableCell>
+                    <Tag
+                      style={{
+                        cursor: "pointer",
+                        fontSize: "0.75rem",
+                        padding: "0 0.5rem",
+                        height: "24px",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        backgroundColor: hoverRowId === row.id ? "#cacaca" : undefined,
+                        transition: "background-color 0.2s ease",
+                      }}
+                      onClick={async () => {
+                        try {
+                          const value = row.cells[1].value;
+                          navigator.clipboard.writeText(value);
+                          const vtSearchUrl = `https://www.virustotal.com/gui/search/${encodeURIComponent(value)}`;
+                          window.open(vtSearchUrl, "_blank");
+
+                          //window.open("https://www.virustotal.com/gui/home/search", "_blank");
+                          //alert("IOC copied to clipboard, paste it into VirusTotal search");
+                        } catch (e) {
+                          alert("Failed to retrieve VirusTotal data");
+                        }
+                      }}
+                      onMouseEnter={() => setHoverRowId(row.id)}
+                      onMouseLeave={() => setHoverRowId(null)}
+                    >
+                      VT Info
+                    </Tag>
+                  </TableCell>
+
                 </TableRow>
               ))}
             </TableBody>
