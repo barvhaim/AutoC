@@ -76,10 +76,12 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
     filterValue.trim() === ""
       ? parsedIocs
       : parsedIocs.filter(
-          (ioc) =>
-            ioc.type.toLowerCase().includes(filterValue.toLowerCase()) ||
-            ioc.value.toLowerCase().includes(filterValue.toLowerCase()),
-        );
+        (ioc) =>
+          ioc.type.toLowerCase().includes(filterValue.toLowerCase()) ||
+          ioc.value.toLowerCase().includes(filterValue.toLowerCase()),
+      );
+
+  const [hoverRowId, setHoverRowId] = useState<string | null>(null);
 
   return (
     <TableContainer>
@@ -102,6 +104,7 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
         headers={[
           { key: "type", header: "Type" },
           { key: "value", header: "Value" },
+          { key: "action", header: "VirusTotal" },
         ]}
       >
         {({ rows, headers, getHeaderProps, getTableProps }) => (
@@ -126,13 +129,42 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
                   <TableCell style={{ fontFamily: "monospace" }}>
                     {row.cells[1].value}
                   </TableCell>
+                  <TableCell>
+                    <Tag
+                      style={{
+                        cursor: "pointer",
+                        fontSize: "0.75rem",
+                        padding: "0 0.5rem",
+                        height: "24px",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        backgroundColor: hoverRowId === row.id ? "#cacaca" : undefined,
+                        transition: "background-color 0.2s ease",
+                      }}
+                      onClick={async () => {
+                        try {
+                          const value = row.cells[1].value;
+                          await navigator.clipboard.writeText(value);
+                          const vtSearchUrl = `https://www.virustotal.com/gui/search/${encodeURIComponent(value)}`;
+                          window.open(vtSearchUrl, "_blank");
+                        } catch (e) {
+                          alert("Failed to retrieve VirusTotal data");
+                        }
+                      }}
+                      onMouseEnter={() => setHoverRowId(row.id)}
+                      onMouseLeave={() => setHoverRowId(null)}
+                    >
+                      VT Info
+                    </Tag>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        )}
-      </DataTable>
-    </TableContainer>
+        )
+        }
+      </DataTable >
+    </TableContainer >
   );
 };
 
