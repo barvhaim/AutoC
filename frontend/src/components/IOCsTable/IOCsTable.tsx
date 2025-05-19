@@ -76,10 +76,12 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
     filterValue.trim() === ""
       ? parsedIocs
       : parsedIocs.filter(
-          (ioc) =>
-            ioc.type.toLowerCase().includes(filterValue.toLowerCase()) ||
-            ioc.value.toLowerCase().includes(filterValue.toLowerCase()),
-        );
+        (ioc) =>
+          ioc.type.toLowerCase().includes(filterValue.toLowerCase()) ||
+          ioc.value.toLowerCase().includes(filterValue.toLowerCase()),
+      );
+
+  const [feedbacks, setFeedbacks] = useState<{ [key: string]: string }>({});
 
   return (
     <TableContainer>
@@ -102,6 +104,7 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
         headers={[
           { key: "type", header: "Type" },
           { key: "value", header: "Value" },
+          { key: "feedback", header: "Feedback" },
         ]}
       >
         {({ rows, headers, getHeaderProps, getTableProps }) => (
