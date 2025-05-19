@@ -13,6 +13,7 @@ import {
   TableToolbarSearch,
   Button,
   TableContainer,
+  TextInput,
 } from "@carbon/react";
 import { Download } from "@carbon/icons-react";
 
@@ -128,6 +129,21 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
                   </TableCell>
                   <TableCell style={{ fontFamily: "monospace" }}>
                     {row.cells[1].value}
+                  </TableCell>
+                  <TableCell style={{ minWidth: "200px" }}>
+                    <TextInput
+                      id={`feedback-${row.cells[1].value}`}
+                      labelText=""
+                      placeholder="Write feedback here..."
+                      size="sm"
+                      value={feedbacks[row.cells[1].value] || ""} // if there is a saved feedback (at feedbacks[...]) present it. else show nothing
+                      onChange={(e) =>
+                        setFeedbacks((prev) => ({
+                          ...prev,
+                          [row.cells[1].value]: e.target.value,
+                        }))
+                      }
+                    />
                   </TableCell>
                 </TableRow>
               ))}
