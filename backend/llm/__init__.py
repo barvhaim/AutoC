@@ -13,7 +13,20 @@ def _get_base_llm_settings(model_name: str, model_parameters: Optional[Dict]) ->
         model_parameters = {}
 
     if LLM_PROVIDER == LLMProviderType.OLLAMA:
-        raise ValueError("Ollama is not supported yet")
+        parameters = {
+            "temperature": model_parameters.get("temperature", 0.9),
+            "top_k": model_parameters.get("top_k", 50),
+            "top_p": model_parameters.get("top_p", 1.0),
+            "num_predict": model_parameters.get("max_tokens", 100),
+            "stop": model_parameters.get("stop_sequences", []),
+            "repeat_penalty": model_parameters.get("repetition_penalty", 1.0),
+        }
+
+        return {
+            "base_url": os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
+            "model": model_name,
+            **parameters,
+        }
 
     elif LLM_PROVIDER == LLMProviderType.OPENAI:
         parameters = {
@@ -104,5 +117,11 @@ def get_chat_llm_client(
         )
 
     elif LLM_PROVIDER == LLMProviderType.OLLAMA:
-        raise ValueError("Ollama is not supported yet")
+        from langchain_ollama import ChatOllama
+
+        return ChatOllama(
+            **_get_base_llm_settings(
+                model_name=model_name, model_parameters=model_parameters
+            )
+        )
     return None
