@@ -15,10 +15,12 @@ class MitreTTPClassifierExtractor:
         model_repo: str = "dvir056/mitre_ttp",
         threshold: float = 0.2,
         qna: Optional[List[dict]] = None,
+        top_k: int = 3,
     ):
         self.article_content = article_content
         self.threshold = threshold
         self.qna = qna or []
+        self.top_k = top_k
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         # === Load model, tokenizer, label binarizer from Hugging Face ===
@@ -123,9 +125,9 @@ class MitreTTPClassifierExtractor:
         # 4. Sort by max confidence
         sorted_preds = sorted(all_preds.items(), key=lambda x: max(x[1]), reverse=True)
 
-        # 5. Prepare results with max confidence
+        # 5. Prepare results with max confidence (limited to top_k)
         results = []
-        for tid, confidences in sorted_preds:
+        for tid, confidences in sorted_preds[:self.top_k]:  # Limit to top_k TTPs
             info = self.mitre_map.get(tid, {"name": "Unknown Technique", "url": ""})
             results.append(
                 {
