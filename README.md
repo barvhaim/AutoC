@@ -56,15 +56,17 @@ cp .env.example .env
 
 #### Supported LLM providers:
 - watsonx.ai by IBM ("watsonx") [Get API Key](docs/getting_watsonx_api_key.md)
-- OpenAI ("openai") - TBD
+- OpenAI ("openai") - Experimental
 - RITS internal IBM ("rits") 
+- Ollama ("ollama") - Experimental
 
 #### Suggested models by provider:
 | Provider (LLM_PROVIDER)     | Models (LLM_MODEL)                                                                                                  |
 |-----------------------------|---------------------------------------------------------------------------------------------------------------------|
 | watsonx.ai by IBM (watsonx) | - `meta-llama/llama-3-3-70b-instruct` <br/>-`ibm-granite/granite-3.1-8b-instruct`                                   | 
 | RITS (rits)                 | - `meta-llama/llama-3-3-70b-instruct` <br/>- `ibm-granite/granite-3.1-8b-instruct` <br/> -`deepseek-ai/DeepSeek-V3` |
-| OpenAI (openai)             | TBD                                                                                                                 |
+| OpenAI (openai) Experimental             | - `gpt-4o`                                                                                                                  |
+| Ollama (ollama) Experimental | - `granite3.2:8b`                                                                                                  |
 
 ### 📝 **Usage**
 Run the AutoC tool with the following command:

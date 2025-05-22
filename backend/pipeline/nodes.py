@@ -149,7 +149,10 @@ def mitre_ttp_classifier_node(state: PipelineState) -> Command:
     try:
         logger.info("Classifying content for MITRE TTPS")
         extractor = MitreTTPClassifierExtractor(
-            article_content=article_textual_content, model_repo=model_path, qna=qna, top_k=top_k
+            article_content=article_textual_content,
+            model_repo=model_path,
+            qna=qna,
+            top_k=top_k,
         )
         mitre_ttps = extractor.classify()
 

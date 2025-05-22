@@ -7,35 +7,31 @@ dependencies = [
     # dev
     "python-dotenv>=1.1.0",
     "black>=25.1.0",
-
     # core
     "diskcache>=5.6.3",
     "pydantic>=2.11.4",
     "langchain>=0.3.25",
     "langchain-ibm>=0.3.10",
     "langchain-openai>=0.3.16",
+    "langchain-ollama>=0.3.3",
     "langgraph>=0.4.2",
     "docling>=2.31.0",
     "requests>=2.32.3",
     "beautifulsoup4>=4.13.4",
-
     # mitre ttps classifier
     "transformers>=4.42.4",
     "torch>=2.7.0",
     "huggingface-hub>=0.31.1",
     "joblib>=1.5.0",
     "scikit-learn>=1.6.1",
-
     # image processing
     "pytesseract>=0.3.13",
-
     # interfaces
     "fastapi>=0.115.12",
     "uvicorn>=0.34.2",
     "click>=8.1.8",
     "rich>=14.0.0",
     "fastmcp>=2.2.10",
-
     # monitoring
     "langsmith>=0.3.42",
 ]
