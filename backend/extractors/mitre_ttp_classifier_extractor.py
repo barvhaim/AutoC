@@ -127,7 +127,7 @@ class MitreTTPClassifierExtractor:
 
         # 5. Prepare results with max confidence (limited to top_k)
         results = []
-        for tid, confidences in sorted_preds[:self.top_k]:  # Limit to top_k TTPs
+        for tid, confidences in sorted_preds[: self.top_k]:  # Limit to top_k TTPs
             info = self.mitre_map.get(tid, {"name": "Unknown Technique", "url": ""})
             results.append(
                 {
