@@ -2,6 +2,12 @@
 @use "@carbon/type";
 @use "@carbon/layout";
 
+.export_button_container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: layout.$spacing-05;
+}
+
 .mitre_ttps_container {
   display: flex;
   flex-direction: row;
@@ -10,9 +16,7 @@
   .ttp_tag {
     @include type.type-style("label-01");
     background: linear-gradient(135deg, #3a3dff 0%, #512da8 100%);
-    transition:
-      background 0.3s ease-in-out,
-      box-shadow 0.3s ease-in-out;
+    transition: box-shadow 0.3s ease-in-out;
     color: colors.$white;
     margin-right: layout.$spacing-03;
     cursor: pointer;

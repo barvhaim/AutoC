@@ -134,6 +134,7 @@ def iocs_extractor_node(state: PipelineState) -> Command:
 
 def mitre_ttp_classifier_node(state: PipelineState) -> Command:
     model_path = os.getenv("DETECT_MITRE_TTPS_MODEL_PATH")
+    top_k = 3  # Limit to top 3 MITRE TTPs
     mitre_ttps = None
     if not model_path:
         return Command(
@@ -148,7 +149,7 @@ def mitre_ttp_classifier_node(state: PipelineState) -> Command:
     try:
         logger.info("Classifying content for MITRE TTPS")
         extractor = MitreTTPClassifierExtractor(
-            article_content=article_textual_content, model_repo=model_path, qna=qna
+            article_content=article_textual_content, model_repo=model_path, qna=qna, top_k=top_k
         )
         mitre_ttps = extractor.classify()
 
