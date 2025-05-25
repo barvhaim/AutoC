@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from typing import Optional
 import requests
 import os
+import re
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -14,6 +15,15 @@ class Crawl4AIParser:
         self.url = url
         self.use_ocr: bool = use_ocr
         self.crawl4ai_base_url = os.getenv("CRAWL4AI_BASE_URL")
+
+    @staticmethod
+    def _extract_article_content_from_markdown(markdown: str) -> str:
+        # Regex to match the title and everything after it, TODO: improve method (?)
+        pattern = r"(# .*)"
+        match = re.search(pattern, markdown, re.DOTALL)
+        if match:
+            return match.group(1)
+        return markdown
 
     def _crawl4ai_payload(self):
         return {
@@ -48,12 +58,12 @@ class Crawl4AIParser:
                 )
                 return None
 
-            content = result.get("markdown", {}).get("raw_markdown")
+            content = result.get("markdown", {}).get("markdown_with_citations")
             if not content:
                 logger.warning("Failed to extract blog content using crawl4ai")
                 return None
 
-            return content
+            return self._extract_article_content_from_markdown(content)
 
         except Exception as e:
             logger.warning(f"Failed to extract blog content using crawl4ai: {e}")
