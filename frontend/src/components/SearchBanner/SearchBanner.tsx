@@ -5,18 +5,24 @@ import { Search } from "@carbon/icons-react";
 import { analyze } from "../../service/analyze.ts";
 
 import styles from "./SearchBanner.module.scss";
-import { setAnalysisResults } from "../../store/analysisSlice.ts";
+import {
+  clearAnalysisResults,
+  setAnalysisResults,
+} from "../../store/analysisSlice.ts";
 
 const SearchBanner = () => {
   const dispatch = useDispatch();
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    dispatch(clearAnalysisResults());
+    setError(null);
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const response: any = await analyze(url);
       if (response.status === 200) {
         dispatch(
@@ -28,9 +34,12 @@ const SearchBanner = () => {
             mitre_ttps: response.data?.mitre_ttps,
           }),
         );
+      } else {
+        setError("Analysis failed. Please try again.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      setError("An unexpected error occurred during analysis.");
     } finally {
       setIsLoading(false);
     }
@@ -71,6 +80,8 @@ const SearchBanner = () => {
           />
         </div>
       )}
+
+      {error && <InlineLoading status={"error"} description={error} />}
     </div>
   );
 };
