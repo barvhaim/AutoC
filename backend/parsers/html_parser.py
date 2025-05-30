@@ -18,7 +18,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class HTMLParser:
+class HtmlParser:
+    """
+    A class to parse HTML content from a given URL using Docling,
+    extract text from images using OCR.
+    """
+
     def __init__(self, url: str, use_ocr: bool = False):
         self.url = url
         self.converter = DocumentConverter()

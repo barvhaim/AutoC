@@ -10,8 +10,8 @@ from backend.pipeline.node_types import (
     IOCS_EXTRACTOR_NODE,
     MITRE_TTP_CLASSIFIER_NODE,
 )
-from backend.parsers.html_parser import HTMLParser
-from backend.parsers.crawl4ai_parser import Crawl4AIParser
+from backend.parsers.html_parser import HtmlParser
+from backend.parsers.crawl4ai_html_parser import Crawl4AiHtmlParser
 from backend.extractors.keywords_extractor import KeywordsExtractor
 from backend.extractors.qna_extractor import QnaExtractor
 from backend.extractors.iocs_extractor import IOCsExtractor
@@ -34,30 +34,20 @@ def html_extractor_node(state: PipelineState) -> Command:
         logger.error("No blog URL provided")
         return Command(goto=END, update={"error": "No blog URL provided"})
 
-    logger.info(f"Extracting content from {url} using Docling")
-    parser = HTMLParser(
-        url=url, use_ocr=os.getenv("ANALYZE_BLOG_IMAGES", "false") == "true"
+    use_crawl4ai_parser = (
+        os.getenv("USE_CRAWL4AI_HEADLESS_BROWSER_HTML_PARSER", "false").lower()
+        == "true"
     )
-    article_textual_content = parser.get_textual_content()
-
-    return Command(
-        goto=KEYWORDS_EXTRACTOR_NODE,
-        update={"article_textual_content": article_textual_content},
-    )
-
-
-def crawl4ai_extractor_node(state: PipelineState) -> Command:
-    if state.get("article_textual_content"):
-        logger.info("Article content already extracted, skipping HTML extraction")
-        return Command(goto=KEYWORDS_EXTRACTOR_NODE)
-
-    url = state.get("url")
-    if not url:
-        logger.error("No blog URL provided")
-        return Command(goto=END, update={"error": "No blog URL provided"})
-
-    logger.info(f"Extracting content from {url} using Crawl4AI")
-    parser = Crawl4AIParser(url=url)
+    if use_crawl4ai_parser:
+        logger.info(f"Extracting content from {url} using Crawl4AI parser")
+        parser = Crawl4AiHtmlParser(
+            url=url, use_ocr=os.getenv("ANALYZE_BLOG_IMAGES", "false").lower() == "true"
+        )
+    else:
+        logger.info(f"Extracting content from {url} using Docling")
+        parser = HtmlParser(
+            url=url, use_ocr=os.getenv("ANALYZE_BLOG_IMAGES", "false") == "true"
+        )
     article_textual_content = parser.get_textual_content()
 
     return Command(
