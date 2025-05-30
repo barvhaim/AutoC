@@ -1,0 +1,14 @@
+[project]
+name = "research"
+version = "0.1.0"
+description = "Research project for LLMs and data analysis for AutoC"
+readme = "README.md"
+requires-python = ">=3.11, <4.0"
+dependencies = [
+    "docling>=2.31.0",
+    "jupyterlab>=4.4.3",
+    "langchain>=0.3.25",
+    "langchain-ollama>=0.3.3",
+    "pandas>=2.2.3",
+    "requests>=2.32.3",
+]
