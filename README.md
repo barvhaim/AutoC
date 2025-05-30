@@ -68,6 +68,37 @@ cp .env.example .env
 | OpenAI (openai) Experimental             | - `gpt-4o`                                                                                                                  |
 | Ollama (ollama) Experimental | - `granite3.2:8b`                                                                                                  |
 
+
+#### Enhanced Blog post extraction (optional)
+By default, AutoC uses combination of [docling](https://github.com/docling-project/docling) and [beautifulsoup4](https://beautiful-soup-4.readthedocs.io/) libraries to extract blog posts content, which behind the scenes uses `requests` library to fetch the blog post content.
+
+There is an option to use [Crawl4AI](https://github.com/unclecode/crawl4ai) that uses a headless browser to fetch the blog post content, which is more reliable, but requires additional setup.
+
+To enable Crawl4AI, you need Crawl4AI backend server, which can be run using Docker (see `docker-compose.yml` file for more details):
+```bash
+crawl4ai:
+    image: unclecode/crawl4ai:0.6.0-r2
+    container_name: crawl4ai
+    restart: unless-stopped
+    shm_size: 1g
+    ports:
+      - "11235:11235"
+ ```
+
+And then set the environment variables in the `.env` file to point to the Crawl4AI server:
+```bash
+USE_CRAWL4AI_HEADLESS_BROWSER_HTML_PARSER=true
+CRAWL4AI_BASE_URL=http://localhost:11235
+```
+
+#### MITRE ATT&CK TTPs detection (optional)
+AutoC can detect MITRE ATT&CK TTPs in the blog post content, which can be used to identify the techniques and tactics used by the threat actors.
+To enable MITRE ATT&CK TTPs detection, you need to set the environment variable in the `.env` file:
+```bash
+HF_TOKEN=<your_huggingface_token>
+DETECT_MITRE_TTPS_MODEL_PATH=dvir056/mitre-ttp  # Hugging Face model path for MITRE ATT&CK TTPs detection
+```
+
 ### 📝 **Usage**
 Run the AutoC tool with the following command:
 ```bash

@@ -23,7 +23,7 @@ services:
       - autoc-net
     restart: unless-stopped
 
-  crawl4ai: # optional service for blog content extraction
+  crawl4ai: # optional service for blog content extraction with crawl4ai
     image: unclecode/crawl4ai:0.6.0-r2
     container_name: crawl4ai
     restart: unless-stopped
