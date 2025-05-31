@@ -3,7 +3,7 @@ from pathlib import Path
 from fastapi import FastAPI, APIRouter, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.concurrency import run_in_threadpool
-from api.data_models import AnalyzeRequest
+from api.data_models import AnalyzeRequest, FeedbackRequest
 from backend.run import run
 
 logging.basicConfig(level=logging.INFO)
@@ -75,6 +75,29 @@ async def ping(request: AnalyzeRequest):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+
+
+@v1_router.post("/feedback")
+async def submit_feedback(request: FeedbackRequest):
+    try:
+        logger.info(f"Received feedback: {request}")
+        # TODO: Process and save the feedback
+        return {"status": "success"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to save feedback: {str(e)}"
+        )
+
+
+@v1_router.get("/feedback/export")
+async def export_feedback():
+    try:
+        data = "Feedback data export is not implemented yet."
+        return {"feedbacks": data}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to export feedbacks: {str(e)}"
+        )
 
 
 app.include_router(v1_router)
