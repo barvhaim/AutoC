@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import {
   DataTable,
   Table,
@@ -19,6 +20,7 @@ import {
 import { Download } from "@carbon/icons-react";
 import { cleanIocValue } from "../../utils/strings.ts";
 import { getVirusTotalUrl } from "../../utils/virusTotal.ts";
+import { postFeedback } from "../../service/feedback.ts";
 
 export interface IOCItem {
   type: string;
@@ -30,6 +32,7 @@ interface IOCsTableProps {
 }
 
 const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
+  const analyzedUrl = useSelector((state: any) => state.analysis.url);
   const [filterValue, setFilterValue] = useState("");
 
   const parsedIocs = iocs.map((ioc, index) => ({
@@ -149,7 +152,7 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
                         >
                           <OverflowMenuItem
                             id={"view-in-virustotal"}
-                            itemText={"View in VirusTotal"}
+                            itemText={"🦠 Scan VirusTotal"}
                             onClick={() => {
                               window.open(url, "_blank");
                             }}
@@ -157,9 +160,49 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
                           />
                           <OverflowMenuItem
                             id={"copy-ioc-value"}
-                            itemText={"Copy Value"}
+                            itemText={"🔗 Copy"}
+                            hasDivider={true}
                             onClick={() => {
                               navigator.clipboard.writeText(row.cells[1].value);
+                            }}
+                          />
+                          <OverflowMenuItem
+                            id={"thumbs-up"}
+                            itemText={"👍 Accurate!"}
+                            hasDivider={true}
+                            onClick={() => {
+                              const feedback = {
+                                url: analyzedUrl,
+                                feedback_type: "ioc",
+                                context: `${row.cells[0].value} | ${row.cells[1].value}`,
+                                value: 1,
+                              };
+                              postFeedback(feedback)
+                                .then(() => {
+                                  console.debug("Feedback sent:", feedback);
+                                })
+                                .catch((err) => {
+                                  console.error("Error sending feedback:", err);
+                                });
+                            }}
+                          />
+                          <OverflowMenuItem
+                            id={"thumbs-down"}
+                            itemText={"😵‍💫 Inaccurate"}
+                            onClick={() => {
+                              const feedback = {
+                                url: analyzedUrl,
+                                feedback_type: "ioc",
+                                context: `${row.cells[0].value} | ${row.cells[1].value}`,
+                                value: -1,
+                              };
+                              postFeedback(feedback)
+                                .then(() => {
+                                  console.debug("Feedback sent:", feedback);
+                                })
+                                .catch((err) => {
+                                  console.error("Error sending feedback:", err);
+                                });
                             }}
                           />
                         </OverflowMenu>
