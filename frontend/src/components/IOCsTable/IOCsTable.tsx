@@ -21,6 +21,7 @@ import { Download } from "@carbon/icons-react";
 import { cleanIocValue } from "../../utils/strings.ts";
 import { getVirusTotalUrl } from "../../utils/virusTotal.ts";
 import { postFeedback } from "../../service/feedback.ts";
+import { exportToStix } from "../../utils/stixExport.ts";
 
 export interface IOCItem {
   type: string;
@@ -61,6 +62,10 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const exportToStixFormat = () => {
+    exportToStix(iocs);
   };
 
   const handleSearch = (
@@ -106,10 +111,19 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
                 renderIcon={Download}
                 onClick={exportToCSV}
                 iconDescription="Export to CSV"
-                kind="primary"
+                kind="tertiary"
                 size="sm"
               >
                 Export CSV
+              </Button>
+              <Button
+                renderIcon={Download}
+                onClick={exportToStixFormat}
+                iconDescription="Export to STIX"
+                kind="tertiary"
+                size="sm"
+              >
+                Export STIX
               </Button>
             </TableToolbarContent>
           </TableToolbar>
