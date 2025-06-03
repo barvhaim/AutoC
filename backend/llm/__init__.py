@@ -91,6 +91,20 @@ def _get_base_llm_settings(model_name: str, model_parameters: Optional[Dict]) ->
             "extra_body": parameters,
         }
 
+    elif LLM_PROVIDER == LLMProviderType.LITELLM:
+        parameters = {
+            "max_tokens": model_parameters.get("max_tokens", 100),
+            "temperature": model_parameters.get("temperature", 0.9),
+            "top_p": model_parameters.get("top_p", 1.0),
+            "stop": model_parameters.get("stop_sequences", []),
+        }
+        return {
+            "base_url": os.getenv("LITELLM_BASE_URL", "http://localhost:4000"),
+            "api_key": os.getenv("LITELLM_API_KEY"),
+            "model": model_name,
+            **parameters,
+        }
+
     raise ValueError(f"Incorrect LLM provider: {LLM_PROVIDER}")
 
 
@@ -123,5 +137,18 @@ def get_chat_llm_client(
             **_get_base_llm_settings(
                 model_name=model_name, model_parameters=model_parameters
             )
+        )
+
+    elif LLM_PROVIDER == LLMProviderType.LITELLM:
+        import litellm
+        settings = _get_base_llm_settings(model_name=model_name, model_parameters=model_parameters)
+        return litellm.LiteLLM(
+            base_url=settings["base_url"],
+            api_key=settings["api_key"],
+            model=settings["model"],
+            max_tokens=settings["max_tokens"],
+            temperature=settings["temperature"],
+            top_p=settings["top_p"],
+            stop=settings["stop"],
         )
     return None

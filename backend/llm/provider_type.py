@@ -6,3 +6,4 @@ class LLMProviderType(Enum):
     OPENAI = "openai"
     RITS = "rits"
     OLLAMA = "ollama"
+    LITELLM = "litellm"
