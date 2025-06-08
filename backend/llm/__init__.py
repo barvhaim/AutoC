@@ -36,7 +36,7 @@ def _get_base_llm_settings(model_name: str, model_parameters: Optional[Dict]) ->
         }
         return {
             "api_key": os.getenv("OPENAI_API_KEY"),
-            "model_id": model_name,
+            "model": model_name,
             **parameters,
         }
 
