@@ -35,7 +35,7 @@ def _get_base_llm_settings(model_name: str, model_parameters: Optional[Dict]) ->
             "stop": model_parameters.get("stop_sequences", []),
         }
         return {
-            "apikey": os.getenv("OPENAI_API_KEY"),
+            "api_key": os.getenv("OPENAI_API_KEY"),
             "model_id": model_name,
             **parameters,
         }
