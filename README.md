@@ -65,7 +65,7 @@ cp .env.example .env
 |-----------------------------|---------------------------------------------------------------------------------------------------------------------|
 | watsonx.ai by IBM (watsonx) | - `meta-llama/llama-3-3-70b-instruct` <br/>-`ibm-granite/granite-3.1-8b-instruct`                                   | 
 | RITS (rits)                 | - `meta-llama/llama-3-3-70b-instruct` <br/>- `ibm-granite/granite-3.1-8b-instruct` <br/> -`deepseek-ai/DeepSeek-V3` |
-| OpenAI (openai) Experimental             | - `gpt-4o`                                                                                                                  |
+| OpenAI (openai)             | - `gpt-4.1-nano`                                                                                                    |
 | Ollama (ollama) Experimental | - `granite3.2:8b`                                                                                                  |
 
 

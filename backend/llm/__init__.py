@@ -31,7 +31,7 @@ def _get_base_llm_settings(model_name: str, model_parameters: Optional[Dict]) ->
     elif LLM_PROVIDER == LLMProviderType.OPENAI:
         parameters = {
             "max_tokens": model_parameters.get("max_tokens", 100),
-            "temperature": model_parameters.get("temperature", 0.9),
+            "temperature": model_parameters.get("temperature", 0),
             "stop": model_parameters.get("stop_sequences", []),
         }
         return {
