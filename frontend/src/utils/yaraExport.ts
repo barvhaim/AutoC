@@ -27,8 +27,8 @@ export const exportToYara = (iocs: IOCItem[]): void => {
   strings:\n`;
 
   // Add each IOC as a string
-  let stringCounter = 1;
   Object.entries(iocsByType).forEach(([type, values]) => {
+    let stringCounter = 1; // Reset counter for each type
     const sanitizedType = sanitizeType(type);
     yaraContent += `    /* ${sanitizedType} IOCs */\n`;
 
