@@ -17,7 +17,7 @@ export const exportToYara = (iocs: IOCItem[]): void => {
   });
 
   // Generate YARA rule content
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const timestamp = new Date().toISOString().replace(/\W/g, "_");
   let yaraContent = `rule IOCs_Export_${timestamp} {
   meta:
     description = "Auto-generated YARA rule from exported IOCs"
