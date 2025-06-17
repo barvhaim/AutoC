@@ -29,12 +29,13 @@ export const exportToYara = (iocs: IOCItem[]): void => {
   // Add each IOC as a string
   let stringCounter = 1;
   Object.entries(iocsByType).forEach(([type, values]) => {
-    yaraContent += `    /* ${type} IOCs */\n`;
+    const sanitizedType = sanitizeType(type);
+    yaraContent += `    /* ${sanitizedType} IOCs */\n`;
 
     values.forEach((value) => {
       // Escape any double quotes in the value
       const escapedValue = value.replace(/"/g, '\\"');
-      yaraContent += `    $${type}_${stringCounter} = "${escapedValue}"\n`;
+      yaraContent += `    $${sanitizedType}_${stringCounter} = "${escapedValue}"\n`;
       stringCounter++;
     });
 
