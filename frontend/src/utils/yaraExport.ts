@@ -2,6 +2,22 @@ import { saveAs } from "file-saver";
 import { IOCItem } from "../components/IOCsTable/IOCsTable";
 
 /**
+ * Sanitizes IOC type names to ensure they are valid YARA identifiers
+ * YARA identifiers can only contain alphanumeric and underscore characters
+ * @param type The IOC type to sanitize
+ * @returns Sanitized type name that can be used in YARA rules
+ */
+const sanitizeType = (type: string): string => {
+  // Replace spaces and special characters with underscores
+  // Remove any characters that aren't alphanumeric or underscore
+  return type
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^a-z0-9_]/g, "")
+    .replace(/^(\d)/, "ioc_$1"); // Ensure identifier doesn't start with a digit
+};
+
+/**
  * Generates and exports IOCs in YARA rule format
  * @param iocs List of IOC items to convert to YARA rule
  */
