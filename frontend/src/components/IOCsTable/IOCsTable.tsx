@@ -21,7 +21,7 @@ import { Download } from "@carbon/icons-react";
 import { cleanIocValue } from "../../utils/strings.ts";
 import { getVirusTotalUrl } from "../../utils/virusTotal.ts";
 import { postFeedback } from "../../service/feedback.ts";
-import { exportToStix } from "../../utils/stixExport.ts";
+import { exportToYara } from "../../utils/yaraExport.ts";
 
 export interface IOCItem {
   type: string;
@@ -64,8 +64,8 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
     document.body.removeChild(link);
   };
 
-  const exportToStixFormat = () => {
-    exportToStix(iocs);
+  const exportToYaraFormat = () => {
+    exportToYara(iocs);
   };
 
   const handleSearch = (
@@ -118,12 +118,12 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
               </Button>
               <Button
                 renderIcon={Download}
-                onClick={exportToStixFormat}
-                iconDescription="Export to STIX"
+                onClick={exportToYaraFormat}
+                iconDescription="Export to YARA"
                 kind="tertiary"
                 size="sm"
               >
-                Export STIX
+                Export YARA
               </Button>
             </TableToolbarContent>
           </TableToolbar>

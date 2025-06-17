@@ -1,5 +1,5 @@
 // Utility functions for exporting IoCs in STIX format
-import {IOCItem} from '../components/IOCsTable/IOCsTable';
+import { IOCItem } from "../components/IOCsTable/IOCsTable";
 
 interface StixObject {
   type: string;
@@ -22,19 +22,19 @@ interface StixBundle {
  */
 const mapIoCTypeToStixType = (iocType: string): string => {
   const typeMapping: Record<string, string> = {
-    'ip': 'ipv4-addr',
-    'ipv4': 'ipv4-addr',
-    'ipv6': 'ipv6-addr',
-    'domain': 'domain-name',
-    'url': 'url',
-    'email': 'email-addr',
-    'md5': 'file',
-    'sha1': 'file',
-    'sha256': 'file',
-    'hash': 'file'
+    ip: "ipv4-addr",
+    ipv4: "ipv4-addr",
+    ipv6: "ipv6-addr",
+    domain: "domain-name",
+    url: "url",
+    email: "email-addr",
+    md5: "file",
+    sha1: "file",
+    sha256: "file",
+    hash: "file",
   };
 
-  return typeMapping[iocType.toLowerCase()] || 'indicator';
+  return typeMapping[iocType.toLowerCase()] || "indicator";
 };
 
 /**
@@ -55,7 +55,7 @@ const iocToStixObject = (ioc: IOCItem): StixObject => {
   // Base STIX object structure
   const stixObject: StixObject = {
     type: stixType,
-    spec_version: '2.1',
+    spec_version: "2.1",
     id: createStixId(stixType),
     created: timestamp,
     modified: timestamp,
@@ -63,35 +63,35 @@ const iocToStixObject = (ioc: IOCItem): StixObject => {
 
   // Add specific properties based on the type
   switch (stixType) {
-    case 'ipv4-addr':
-    case 'ipv6-addr':
+    case "ipv4-addr":
+    case "ipv6-addr":
       stixObject.value = ioc.value;
       break;
-    case 'domain-name':
+    case "domain-name":
       stixObject.value = ioc.value;
       break;
-    case 'url':
+    case "url":
       stixObject.value = ioc.value;
       break;
-    case 'email-addr':
+    case "email-addr":
       stixObject.value = ioc.value;
       break;
-    case 'file':
+    case "file":
       // Handle hash values
       const hashType = ioc.type.toLowerCase();
       stixObject.hashes = {};
-      if (['md5', 'sha1', 'sha256'].includes(hashType)) {
+      if (["md5", "sha1", "sha256"].includes(hashType)) {
         stixObject.hashes[hashType] = ioc.value;
       } else {
         // Default to SHA-256 if the specific hash type isn't known
-        stixObject.hashes['SHA-256'] = ioc.value;
+        stixObject.hashes["SHA-256"] = ioc.value;
       }
       break;
     default:
       // Default to indicator type for unknown IoC types
-      stixObject.type = 'indicator';
+      stixObject.type = "indicator";
       stixObject.pattern = `[file:hashes.'${ioc.type.toUpperCase()}' = '${ioc.value}']`;
-      stixObject.pattern_type = 'stix';
+      stixObject.pattern_type = "stix";
       stixObject.valid_from = timestamp;
       break;
   }
@@ -104,32 +104,35 @@ const iocToStixObject = (ioc: IOCItem): StixObject => {
  */
 export const convertIocsToStixBundle = (iocs: IOCItem[]): StixBundle => {
   // Create STIX objects from IoCs
-  const stixObjects = iocs.map(ioc => iocToStixObject(ioc));
+  const stixObjects = iocs.map((ioc) => iocToStixObject(ioc));
 
   // Create the STIX bundle
-    return {
-      type: 'bundle',
-      id: `bundle--${self.crypto.randomUUID()}`,
-      spec_version: '2.1',
-      objects: stixObjects,
+  return {
+    type: "bundle",
+    id: `bundle--${self.crypto.randomUUID()}`,
+    spec_version: "2.1",
+    objects: stixObjects,
   };
 };
 
 /**
  * Exports IoCs as a STIX bundle JSON file
  */
-export const exportToStix = (iocs: IOCItem[], filename = 'iocs_stix_export.json'): void => {
+export const exportToStix = (
+  iocs: IOCItem[],
+  filename = "iocs_stix_export.json",
+): void => {
   const stixBundle = convertIocsToStixBundle(iocs);
 
   // Create JSON blob and download
   const jsonContent = JSON.stringify(stixBundle, null, 2);
-  const blob = new Blob([jsonContent], { type: 'application/json' });
+  const blob = new Blob([jsonContent], { type: "application/json" });
   const url = URL.createObjectURL(blob);
 
-  const link = document.createElement('a');
-  link.setAttribute('href', url);
-  link.setAttribute('download', filename);
-  link.style.visibility = 'hidden';
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  link.style.visibility = "hidden";
 
   document.body.appendChild(link);
   link.click();
