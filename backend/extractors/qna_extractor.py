@@ -3,7 +3,7 @@
 from dotenv import load_dotenv
 import os
 import logging
-from typing import List, Any, Dict
+from typing import List, Any, Dict, Optional
 import json
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables import RunnableParallel, RunnableSequence
@@ -11,6 +11,7 @@ from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTempla
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from backend.prompts import get_prompts
 from backend.llm import get_chat_llm_client
+from backend.rag.qna_rag import QnaRAG
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -22,6 +23,7 @@ class QnaExtractor:
         article_content: str,
         analyst_questions: List[str] = None,
         batch_mode: bool = False,
+        rag_mode: bool = False,
     ):
         self.article_content = article_content
         # Use provided questions if non-empty, otherwise load defaults from config
@@ -32,8 +34,25 @@ class QnaExtractor:
             else self._load_analyst_questions()
         )
         self.batch_mode = batch_mode
+        self.rag_mode = rag_mode
         self.prompts = get_prompts()
         self.llm = self._llm()
+
+        # Warn if both batch and RAG modes are enabled
+        if self.batch_mode and self.rag_mode:
+            logger.warning(
+                "RAG mode is disabled when batch mode is enabled. Using full article content for batch processing."
+            )
+
+        # Initialize RAG if needed (only when not in batch mode)
+        self.rag = None
+        self.article_hash = None
+        if self.rag_mode and not self.batch_mode:
+            self.rag = QnaRAG(article_content=self.article_content)
+            self.article_hash = self.rag.index()
+            logger.info(
+                f"Indexed article content with hash: {self.article_hash[:8]}..."
+            )
 
     @staticmethod
     def _load_analyst_questions() -> List[str]:
@@ -55,10 +74,25 @@ class QnaExtractor:
         )
 
     def _answer_question(self, question: str) -> RunnableSequence:
+        # Get context - either full article or RAG retrieved context
+        if self.rag_mode and self.rag:
+            # Use RAG to get relevant context for this question
+            rag_results = self.rag.search(question, k=2, article_hash=self.article_hash)
+            if rag_results:
+                context = "\n\n".join([result["text"] for result in rag_results])
+                logger.debug(f"Using RAG context for question: {question[:50]}...")
+            else:
+                context = self.article_content
+                logger.warning(
+                    f"No RAG results, using full article for: {question[:50]}..."
+                )
+        else:
+            context = self.article_content
+
         system_message = SystemMessagePromptTemplate.from_template(
             template=self.prompts["qna"]["system"],
             partial_variables={
-                "context": self.article_content,
+                "context": context,
             },
         )
         user_message = HumanMessage(content=question)
@@ -75,10 +109,13 @@ class QnaExtractor:
             [f"{i+1}. {q}" for i, q in enumerate(self.analyst_questions)]
         )
 
+        # Batch mode always uses full article content (RAG mode is disabled in batch)
+        context = self.article_content
+
         system_message = SystemMessagePromptTemplate.from_template(
             template=self.prompts["qna"]["batch_system"],
             partial_variables={
-                "context": self.article_content,
+                "context": context,
                 "questions": questions_text,
             },
         )
@@ -136,3 +173,12 @@ class QnaExtractor:
             logger.error(f"Error in individual QnA processing: {str(e)}")
             logger.exception("Full traceback:")
             return []
+
+    def cleanup_rag(self):
+        """Clean up RAG resources if used"""
+        if self.rag_mode and self.rag:
+            try:
+                self.rag.cleanup()
+                logger.info("RAG resources cleaned up successfully")
+            except Exception as e:
+                logger.error(f"Error cleaning up RAG resources: {e}")
