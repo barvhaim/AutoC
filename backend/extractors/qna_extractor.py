@@ -24,6 +24,8 @@ class QnaExtractor:
         batch_mode: bool = False,
     ):
         self.article_content = article_content
+        # Use provided questions if non-empty, otherwise load defaults from config
+        # Note: empty list [] is treated same as None - both trigger config fallback
         self.analyst_questions = (
             analyst_questions
             if analyst_questions is not None and len(analyst_questions) > 0
