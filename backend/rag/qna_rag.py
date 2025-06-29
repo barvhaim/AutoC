@@ -73,14 +73,9 @@ class QnaRAG:
     def search(self, query: str, k: int = 2, article_hash: str = None):
         """Search for similar content in the vector store"""
         try:
-            import time
-
             logger.info(
                 f"Searching collection '{self.vector_store.collection_name}' for: {query[:50]}..."
             )
-
-            # Give a moment for indexing to complete
-            time.sleep(1)
 
             # Try similarity search with score
             try:
