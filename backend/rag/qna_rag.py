@@ -60,27 +60,17 @@ class QnaRAG:
         try:
             logger.info(f"Attempting to index {len(chunks)} documents...")
 
-            # Use add_documents instead of from_documents
             self.vector_store.add_documents(documents=chunks)
             logger.info("Documents added successfully")
 
         except Exception as e:
             logger.error(f"Error adding documents: {e}")
-            # Fallback to from_documents
-            try:
-                logger.info("Trying from_documents as fallback...")
-                result = self.vector_store.from_documents(
-                    documents=chunks, embedding=get_embeddings_client()
-                )
-                logger.info(f"from_documents result: {result}")
-            except Exception as e2:
-                logger.error(f"from_documents also failed: {e2}")
-                raise
+            raise
 
         logger.info("Content indexed successfully")
         return article_hash
 
-    def search(self, query: str, k: int = 5, article_hash: str = None):
+    def search(self, query: str, k: int = 2, article_hash: str = None):
         """Search for similar content in the vector store"""
         try:
             import time
