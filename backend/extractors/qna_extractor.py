@@ -25,7 +25,9 @@ class QnaExtractor:
     ):
         self.article_content = article_content
         self.analyst_questions = (
-            analyst_questions if analyst_questions is not None else self._load_analyst_questions()
+            analyst_questions
+            if analyst_questions is not None
+            else self._load_analyst_questions()
         )
         self.batch_mode = batch_mode
         self.prompts = get_prompts()
