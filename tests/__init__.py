@@ -1,0 +1,1 @@
+# Tests for AutoC - Automated IoC extraction tool

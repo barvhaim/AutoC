@@ -36,9 +36,35 @@ dependencies = [
     "langsmith>=0.3.42",
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-mock>=3.14.0",
+    "httpx>=0.28.0",
+]
+development = [
+    "black>=25.1.0",
+    "ruff>=0.1.0",
+    "pre-commit>=3.0.0",
+]
+
 [tool.ruff]
 line-length = 120
 target-version = "py311"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --strict-markers"
+testpaths = [
+    "tests",
+]
+markers = [
+    "unit: marks tests as unit tests (fast, isolated)",
+    "integration: marks tests as integration tests (slower, requires components)",
+    "e2e: marks tests as end-to-end tests (slowest, requires full setup)",
+    "slow: marks tests as slow running",
+]
 
 [tool.uv.workspace]
 members = [
