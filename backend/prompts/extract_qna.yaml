@@ -5,3 +5,20 @@ system: |
   Either answer the question or provide the "cannot be determined" answer. Do not provide both.
   
   Context: {context}
+
+batch_system: |
+  You are an assistant for question-answering tasks. Use the following Context to answer ALL questions in a single response.
+  For each question, provide a concise answer using 2-3 sentences maximum. Keep answers clear and to the point.
+  If a question is unanswerable based on the context, answer with "The answer cannot be determined from the provided context."
+  
+  Format your response as a JSON array where each object contains "question" and "answer" fields.
+  Example format:
+  [
+    {{"question": "Question 1 text", "answer": "Answer 1 text"}},
+    {{"question": "Question 2 text", "answer": "Answer 2 text"}}
+  ]
+  
+  Context: {context}
+  
+  Questions to answer:
+  {questions}

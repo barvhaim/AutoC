@@ -7,7 +7,7 @@ import json
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables import RunnableParallel, RunnableSequence
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
-from langchain_core.output_parsers import StrOutputParser
+from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from backend.prompts import get_prompts
 from backend.llm import get_chat_llm_client
 
@@ -15,11 +15,17 @@ load_dotenv()
 
 
 class QnaExtractor:
-    def __init__(self, article_content: str, analyst_questions: List[str] = []):
+    def __init__(
+        self,
+        article_content: str,
+        analyst_questions: List[str] = [],
+        batch_mode: bool = False,
+    ):
         self.article_content = article_content
         self.analyst_questions = (
             analyst_questions if analyst_questions else self._load_analyst_questions()
         )
+        self.batch_mode = batch_mode
         self.prompts = get_prompts()
         self.llm = self._llm()
 
@@ -56,7 +62,48 @@ class QnaExtractor:
         )
         return prompt | self.llm | StrOutputParser()
 
+    def _batch_answer_questions(self) -> RunnableSequence:
+        """Process all questions in a single model call"""
+        # Format questions as numbered list
+        questions_text = "\n".join(
+            [f"{i+1}. {q}" for i, q in enumerate(self.analyst_questions)]
+        )
+
+        system_message = SystemMessagePromptTemplate.from_template(
+            template=self.prompts["qna"]["batch_system"],
+            partial_variables={
+                "context": self.article_content,
+                "questions": questions_text,
+            },
+        )
+
+        prompt = ChatPromptTemplate.from_messages([system_message])
+        return prompt | self.llm | JsonOutputParser()
+
     def qna_over_article(self) -> List[Dict]:
+        if self.batch_mode:
+            # Process all questions in a single model call
+            try:
+                batch_chain = self._batch_answer_questions()
+                result = batch_chain.invoke({})
+
+                # Ensure we have the expected format
+                if isinstance(result, list):
+                    return result
+                else:
+                    # Fallback to individual mode if batch parsing fails
+                    print("Warning: Batch mode failed, falling back to individual mode")
+                    return self._individual_qna()
+            except Exception as e:
+                print(
+                    f"Warning: Batch mode failed with error {e}, falling back to individual mode"
+                )
+                return self._individual_qna()
+        else:
+            return self._individual_qna()
+
+    def _individual_qna(self) -> List[Dict]:
+        """Process questions individually (original behavior)"""
         qna = []
         tasks = {
             f"task{i}": self._answer_question(question)

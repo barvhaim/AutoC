@@ -69,7 +69,7 @@ def _get_base_llm_settings(model_name: str, model_parameters: Optional[Dict]) ->
             "meta-llama/llama-3-3-70b-instruct": "llama-3-3-70b-instruct",
             "ibm-granite/granite-3.1-8b-instruct": "granite-3-1-8b-instruct",
             "meta-llama/llama-4-maverick-17b-128e-instruct-fp8": "llama-4-mvk-17b-128e-fp8",
-            "meta-llama/llama-4-scout-17b-16e": "llama-4-scout-17b-16e"
+            "meta-llama/Llama-4-Scout-17B-16E-Instruct": "llama-4-scout-17b-16e-instruct",
         }
         if model_name not in model_to_url_path:
             model_to_url_path[model_name] = model_name

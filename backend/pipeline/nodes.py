@@ -99,9 +99,16 @@ def qna_extractor_node(state: PipelineState) -> Command:
     settings = state.get("settings", {})
     analyst_questions = settings.get("analyst_questions")
 
-    logger.info(f"QnA extraction from article content")
+    # Check for batch mode setting from environment or settings
+    batch_mode = os.getenv("QNA_BATCH_MODE", "false").lower() == "true"
+    if "qna_batch_mode" in settings:
+        batch_mode = settings.get("qna_batch_mode", False)
+
+    logger.info(f"QnA extraction from article content (batch_mode={batch_mode})")
     extractor = QnaExtractor(
-        article_content=article_textual_content, analyst_questions=analyst_questions
+        article_content=article_textual_content,
+        analyst_questions=analyst_questions,
+        batch_mode=batch_mode,
     )
     qna = extractor.qna_over_article()
 

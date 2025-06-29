@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import uvicorn
 
     logger.info("Starting server...")
