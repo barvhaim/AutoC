@@ -2,6 +2,7 @@
 
 from dotenv import load_dotenv
 import os
+import logging
 from typing import List, Any, Dict
 import json
 from langchain_core.messages import HumanMessage
@@ -12,18 +13,19 @@ from backend.prompts import get_prompts
 from backend.llm import get_chat_llm_client
 
 load_dotenv()
+logger = logging.getLogger(__name__)
 
 
 class QnaExtractor:
     def __init__(
         self,
         article_content: str,
-        analyst_questions: List[str] = [],
+        analyst_questions: List[str] = None,
         batch_mode: bool = False,
     ):
         self.article_content = article_content
         self.analyst_questions = (
-            analyst_questions if analyst_questions else self._load_analyst_questions()
+            analyst_questions if analyst_questions is not None else self._load_analyst_questions()
         )
         self.batch_mode = batch_mode
         self.prompts = get_prompts()
@@ -92,11 +94,11 @@ class QnaExtractor:
                     return result
                 else:
                     # Fallback to individual mode if batch parsing fails
-                    print("Warning: Batch mode failed, falling back to individual mode")
+                    logger.warning("Batch mode failed, falling back to individual mode")
                     return self._individual_qna()
             except Exception as e:
-                print(
-                    f"Warning: Batch mode failed with error {e}, falling back to individual mode"
+                logger.warning(
+                    f"Batch mode failed with error {e}, falling back to individual mode"
                 )
                 return self._individual_qna()
         else:
