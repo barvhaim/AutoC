@@ -26,7 +26,7 @@ class QnaExtractor:
         self.article_content = article_content
         self.analyst_questions = (
             analyst_questions
-            if analyst_questions is not None
+            if analyst_questions is not None and len(analyst_questions) > 0
             else self._load_analyst_questions()
         )
         self.batch_mode = batch_mode
@@ -85,40 +85,52 @@ class QnaExtractor:
         return prompt | self.llm | JsonOutputParser()
 
     def qna_over_article(self) -> List[Dict]:
-        if self.batch_mode:
-            # Process all questions in a single model call
-            try:
-                batch_chain = self._batch_answer_questions()
-                result = batch_chain.invoke({})
+        try:
+            if self.batch_mode:
+                # Process all questions in a single model call
+                try:
+                    batch_chain = self._batch_answer_questions()
+                    result = batch_chain.invoke({})
 
-                # Ensure we have the expected format
-                if isinstance(result, list):
-                    return result
-                else:
-                    # Fallback to individual mode if batch parsing fails
-                    logger.warning("Batch mode failed, falling back to individual mode")
+                    # Ensure we have the expected format
+                    if isinstance(result, list):
+                        return result
+                    else:
+                        # Fallback to individual mode if batch parsing fails
+                        logger.warning(
+                            "Batch mode failed, falling back to individual mode"
+                        )
+                        return self._individual_qna()
+                except Exception as e:
+                    logger.warning(
+                        f"Batch mode failed with error {e}, falling back to individual mode"
+                    )
                     return self._individual_qna()
-            except Exception as e:
-                logger.warning(
-                    f"Batch mode failed with error {e}, falling back to individual mode"
-                )
+            else:
                 return self._individual_qna()
-        else:
-            return self._individual_qna()
+        except Exception as e:
+            logger.error(f"Critical error in qna_over_article: {str(e)}")
+            logger.exception("Full traceback:")
+            return []
 
     def _individual_qna(self) -> List[Dict]:
         """Process questions individually (original behavior)"""
-        qna = []
-        tasks = {
-            f"task{i}": self._answer_question(question)
-            for i, question in enumerate(self.analyst_questions)
-        }
-        res = RunnableParallel(**tasks).invoke(input={})
-        for i, question in enumerate(self.analyst_questions):
-            qna.append(
-                {
-                    "question": question,
-                    "answer": res[f"task{i}"],
-                }
-            )
-        return qna
+        try:
+            qna = []
+            tasks = {
+                f"task{i}": self._answer_question(question)
+                for i, question in enumerate(self.analyst_questions)
+            }
+            res = RunnableParallel(**tasks).invoke(input={})
+            for i, question in enumerate(self.analyst_questions):
+                qna.append(
+                    {
+                        "question": question,
+                        "answer": res[f"task{i}"],
+                    }
+                )
+            return qna
+        except Exception as e:
+            logger.error(f"Error in individual QnA processing: {str(e)}")
+            logger.exception("Full traceback:")
+            return []

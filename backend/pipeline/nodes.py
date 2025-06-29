@@ -102,20 +102,29 @@ def qna_extractor_node(state: PipelineState) -> Command:
     # Check for batch mode setting from environment or settings
     batch_mode = os.getenv("QNA_BATCH_MODE", "false").lower() == "true"
     if "qna_batch_mode" in settings:
-        batch_mode = settings.get("qna_batch_mode", False)
+        batch_mode = str(settings.get("qna_batch_mode", False)).lower() == "true"
 
     logger.info(f"QnA extraction from article content (batch_mode={batch_mode})")
-    extractor = QnaExtractor(
-        article_content=article_textual_content,
-        analyst_questions=analyst_questions,
-        batch_mode=batch_mode,
-    )
-    qna = extractor.qna_over_article()
 
-    if not qna:
-        logger.error("Failed to extract QnA from article content")
+    try:
+        extractor = QnaExtractor(
+            article_content=article_textual_content,
+            analyst_questions=analyst_questions,
+            batch_mode=batch_mode,
+        )
+        qna = extractor.qna_over_article()
+
+        if not qna:
+            logger.error("Failed to extract QnA from article content")
+            return Command(
+                goto=END, update={"error": "Failed to extract QnA from article content"}
+            )
+    except Exception as e:
+        logger.error(f"Exception in QnA extraction: {str(e)}")
+        logger.exception("Full traceback:")
         return Command(
-            goto=END, update={"error": "Failed to extract QnA from article content"}
+            goto=END,
+            update={"error": f"Failed to extract QnA from article content: {str(e)}"},
         )
 
     return Command(
