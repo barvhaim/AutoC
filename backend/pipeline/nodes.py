@@ -104,13 +104,28 @@ def qna_extractor_node(state: PipelineState) -> Command:
     if "qna_batch_mode" in settings:
         batch_mode = str(settings.get("qna_batch_mode", False)).lower() == "true"
 
-    logger.info(f"QnA extraction from article content (batch_mode={batch_mode})")
+    # Check for RAG mode setting from environment or settings
+    rag_mode = os.getenv("QNA_RAG_MODE", "false").lower() == "true"
+    if "qna_rag_mode" in settings:
+        rag_mode = str(settings.get("qna_rag_mode", False)).lower() == "true"
+
+    # Warn if both batch and RAG modes are enabled
+    if batch_mode and rag_mode:
+        logger.warning(
+            "Both batch mode and RAG mode are enabled. RAG mode will be disabled in favor of batch mode."
+        )
+        rag_mode = False
+
+    logger.info(
+        f"QnA extraction from article content (batch_mode={batch_mode}, rag_mode={rag_mode})"
+    )
 
     try:
         extractor = QnaExtractor(
             article_content=article_textual_content,
             analyst_questions=analyst_questions,
             batch_mode=batch_mode,
+            rag_mode=rag_mode,
         )
         qna = extractor.qna_over_article()
 
@@ -121,7 +136,7 @@ def qna_extractor_node(state: PipelineState) -> Command:
             )
     except Exception as e:
         logger.error(f"Exception in QnA extraction: {str(e)}")
-        logger.exception("Full traceback:")
+        logger.error("Full traceback:", exc_info=True)
         return Command(
             goto=END,
             update={"error": f"Failed to extract QnA from article content: {str(e)}"},

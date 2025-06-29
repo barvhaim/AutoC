@@ -24,6 +24,11 @@ docker-compose up --build
 ```
 Once the app is up and running, you can access it at [http://localhost:8000](http://localhost:8000)
 
+#### Optional Services
+- **With crawl4ai**: `docker-compose --profile crawl4ai up --build`
+- **With Milvus vector database**: `docker-compose --profile milvus up --build`
+- **With both**: `docker-compose --profile crawl4ai --profile milvus up --build`
+
 
 ### 📦 Installation
 1. Install Python 3.11 or later. (https://www.python.org/downloads/)
@@ -74,16 +79,12 @@ By default, AutoC uses combination of [docling](https://github.com/docling-proje
 
 There is an option to use [Crawl4AI](https://github.com/unclecode/crawl4ai) that uses a headless browser to fetch the blog post content, which is more reliable, but requires additional setup.
 
-To enable Crawl4AI, you need Crawl4AI backend server, which can be run using Docker (see `docker-compose.yml` file for more details):
+To enable Crawl4AI, you need Crawl4AI backend server, which can be run using Docker:
 ```bash
-crawl4ai:
-    image: unclecode/crawl4ai:0.6.0-r2
-    container_name: crawl4ai
-    restart: unless-stopped
-    shm_size: 1g
-    ports:
-      - "11235:11235"
- ```
+docker-compose --profile crawl4ai up -d
+```
+
+The crawl4ai service uses a profile configuration, so it only starts when explicitly requested with the `--profile crawl4ai` flag.
 
 And then set the environment variables in the `.env` file to point to the Crawl4AI server:
 ```bash
@@ -108,6 +109,49 @@ You can also control this via API settings by including `"qna_batch_mode": true`
 - Potentially faster processing for multiple questions
 - More cost-effective for large question sets
 - Automatic fallback to individual mode if batch processing fails
+
+#### Q&A RAG Mode (optional)
+AutoC supports Retrieval-Augmented Generation (RAG) for intelligent context retrieval during Q&A processing:
+
+- **Standard mode** (default): Uses the entire article content as context for answering questions
+- **RAG mode**: Intelligently retrieves only the most relevant chunks of content for each question
+
+To enable RAG mode, set the environment variable in the `.env` file:
+```bash
+QNA_RAG_MODE=true
+```
+
+You can also control this via API settings by including `"qna_rag_mode": true` in your request.
+
+**Benefits of RAG mode:**
+- More targeted and relevant answers by focusing on specific content sections
+- Improved answer quality for long articles by reducing noise
+- Better handling of multi-topic articles
+- Automatic content chunking and semantic search
+- Efficient processing of large documents
+
+**Note:** RAG mode only works with individual Q&A processing mode. When batch mode (`QNA_BATCH_MODE=true`) is enabled, RAG mode is automatically disabled and the full article content is used as context.
+
+**RAG Configuration:**
+RAG mode requires a Milvus vector database. Configure the connection in your `.env` file:
+```bash
+RAG_MILVUS_HOST=localhost
+RAG_MILVUS_PORT=19530
+RAG_MILVUS_USER=
+RAG_MILVUS_PASSWORD=
+RAG_MILVUS_SECURE=false
+```
+
+To run Milvus with Docker:
+```bash
+docker-compose --profile milvus up -d
+```
+
+**How it works:**
+1. Article content is automatically chunked and indexed into Milvus vector store
+2. For each analyst question, the most relevant content chunks are retrieved
+3. Only the relevant context is sent to the LLM for answer generation
+4. Vector store is automatically cleaned up after processing
 
 #### MITRE ATT&CK TTPs detection (optional)
 AutoC can detect MITRE ATT&CK TTPs in the blog post content, which can be used to identify the techniques and tactics used by the threat actors.
