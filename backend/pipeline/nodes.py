@@ -129,13 +129,6 @@ def qna_extractor_node(state: PipelineState) -> Command:
         )
         qna = extractor.qna_over_article()
 
-        # Clean up RAG resources if used
-        if rag_mode:
-            try:
-                extractor.cleanup_rag()
-            except Exception as cleanup_error:
-                logger.warning(f"Failed to cleanup RAG resources: {cleanup_error}")
-
         if not qna:
             logger.error("Failed to extract QnA from article content")
             return Command(
@@ -143,7 +136,7 @@ def qna_extractor_node(state: PipelineState) -> Command:
             )
     except Exception as e:
         logger.error(f"Exception in QnA extraction: {str(e)}")
-        logger.exception("Full traceback:")
+        logger.error("Full traceback:", exc_info=True)
         return Command(
             goto=END,
             update={"error": f"Failed to extract QnA from article content: {str(e)}"},

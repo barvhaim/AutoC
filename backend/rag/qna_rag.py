@@ -22,8 +22,7 @@ class QnaRAG:
             embedding_function=get_embeddings_client(),
             collection_name=collection_name,
             connection_args={
-                "host": os.getenv("RAG_MILVUS_HOST", "localhost"),
-                "port": os.getenv("RAG_MILVUS_PORT", "19530"),
+                "uri": f"http://{os.getenv('RAG_MILVUS_HOST', 'localhost')}:{os.getenv('RAG_MILVUS_PORT', '19530')}",
                 "user": os.getenv("RAG_MILVUS_USER", ""),
                 "password": os.getenv("RAG_MILVUS_PASSWORD", ""),
                 "secure": os.getenv("RAG_MILVUS_SECURE", "false").lower() == "true",
@@ -149,33 +148,3 @@ class QnaRAG:
         except Exception as e:
             logger.error(f"Error during search: {e}")
             return []
-
-    def cleanup(self):
-        """Remove all chunks from the collection"""
-        from pymilvus import connections, utility
-
-        try:
-            # Establish connection to Milvus
-            connections.connect(
-                alias="default",
-                host=os.getenv("RAG_MILVUS_HOST", "localhost"),
-                port=os.getenv("RAG_MILVUS_PORT", "19530"),
-            )
-            # Drop the collection
-            if utility.has_collection(self.vector_store.collection_name):
-                utility.drop_collection(self.vector_store.collection_name)
-                logger.info(
-                    f"Collection '{self.vector_store.collection_name}' deleted successfully"
-                )
-            else:
-                logger.info(
-                    f"Collection '{self.vector_store.collection_name}' does not exist"
-                )
-        except Exception as e:
-            logger.error(f"Failed to cleanup collection: {e}")
-        finally:
-            # Disconnect
-            try:
-                connections.disconnect("default")
-            except:
-                pass

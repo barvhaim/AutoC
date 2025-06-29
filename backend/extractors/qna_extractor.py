@@ -149,7 +149,6 @@ class QnaExtractor:
                 return self._individual_qna()
         except Exception as e:
             logger.error(f"Critical error in qna_over_article: {str(e)}")
-            logger.exception("Full traceback:")
             return []
 
     def _individual_qna(self) -> List[Dict]:
@@ -171,14 +170,4 @@ class QnaExtractor:
             return qna
         except Exception as e:
             logger.error(f"Error in individual QnA processing: {str(e)}")
-            logger.exception("Full traceback:")
             return []
-
-    def cleanup_rag(self):
-        """Clean up RAG resources if used"""
-        if self.rag_mode and self.rag:
-            try:
-                self.rag.cleanup()
-                logger.info("RAG resources cleaned up successfully")
-            except Exception as e:
-                logger.error(f"Error cleaning up RAG resources: {e}")

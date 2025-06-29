@@ -1,5 +1,6 @@
 from typing import Optional
 import logging
+import sys
 from datetime import datetime
 import click
 from rich.console import Console
@@ -136,9 +137,22 @@ def extract(url: Optional[str]):
         _display_results(console=console, res=res, url=url)
     except Exception as e:
         logger.error(f"Error: {str(e)}")
+        raise SystemExit(1)
 
 
 cli.add_command(extract)
 
+
+def custom_excepthook(exc_type, exc_value, exc_traceback):
+    """Custom exception hook to prevent sys.excepthook errors"""
+    if exc_type is KeyboardInterrupt:
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+
+    logger.error(f"Uncaught exception: {exc_type.__name__}: {exc_value}")
+    sys.exit(1)
+
+
 if __name__ == "__main__":
+    sys.excepthook = custom_excepthook
     cli()
