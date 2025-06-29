@@ -51,7 +51,9 @@ def analyze_security_blog(url: str) -> str:
             output += f"\n🧑‍💻 MITRE TTPs ({len(mitre_ttps)})\n"
             if mitre_ttps:
                 for ttp in mitre_ttps:
-                    output += f"ID: {ttp['id']}, Name: {ttp['name']}, URL: {ttp['url']}\n"
+                    output += (
+                        f"ID: {ttp['id']}, Name: {ttp['name']}, URL: {ttp['url']}\n"
+                    )
             else:
                 output += "No MITRE TTPs found\n"
 
@@ -62,4 +64,4 @@ def analyze_security_blog(url: str) -> str:
 
 
 if __name__ == "__main__":
-    mcp.run(transport='stdio')
+    mcp.run(transport="stdio")

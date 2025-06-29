@@ -91,6 +91,24 @@ USE_CRAWL4AI_HEADLESS_BROWSER_HTML_PARSER=true
 CRAWL4AI_BASE_URL=http://localhost:11235
 ```
 
+#### Q&A Batch Mode (optional)
+AutoC processes analyst questions about articles in two modes:
+- **Individual mode** (default): Each question is processed separately with individual LLM calls
+- **Batch mode**: All questions are processed together in a single LLM call for improved performance
+
+To enable batch mode, set the environment variable in the `.env` file:
+```bash
+QNA_BATCH_MODE=true
+```
+
+You can also control this via API settings by including `"qna_batch_mode": true` in your request.
+
+**Benefits of batch mode:**
+- Reduces number of API calls from N questions to 1 call
+- Potentially faster processing for multiple questions
+- More cost-effective for large question sets
+- Automatic fallback to individual mode if batch processing fails
+
 #### MITRE ATT&CK TTPs detection (optional)
 AutoC can detect MITRE ATT&CK TTPs in the blog post content, which can be used to identify the techniques and tactics used by the threat actors.
 To enable MITRE ATT&CK TTPs detection, you need to set the environment variable in the `.env` file:

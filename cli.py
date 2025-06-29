@@ -117,6 +117,7 @@ def _display_results(console: Console, res: dict, url: str):
     else:
         console.print("No MITRE ATT&CK TTPs detected\n")
 
+
 @click.group()
 def cli():
     """AutoC is a framework for Automated IoCs extraction."""
