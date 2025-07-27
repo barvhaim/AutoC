@@ -161,6 +161,8 @@ HF_TOKEN=<your_huggingface_token>
 DETECT_MITRE_TTPS_MODEL_PATH=dvir056/mitre-ttp  # Hugging Face model path for MITRE ATT&CK TTPs detection
 ```
 
+Information about model training: https://github.com/barvhaim/attack-ttps-detection?tab=readme-ov-file#-mitre-attck-ttps-classification
+
 ### 📝 **Usage**
 Run the AutoC tool with the following command:
 ```bash
