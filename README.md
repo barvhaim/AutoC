@@ -53,10 +53,10 @@ Once the app is up and running, you can access it at [http://localhost:8000](htt
 5. Configure the `.env` file with your API keys (See [Configuration](#-configuration) section below for more details).
 
 ### 🔑 **Configuration**
-Set up API keys by adding them to the `.env` file (Use `.env.example` file as a template).
+Set up API keys by adding them to the `.env` file (Use `.env.sample` file as a template).
 You can use either of multiple LLM providers (IBM WatsonX, OpenAI), you will configure which one to use in the next step.
 ```bash
-cp .env.example .env
+cp .env.sample .env
 ```
 
 #### Supported LLM providers:
