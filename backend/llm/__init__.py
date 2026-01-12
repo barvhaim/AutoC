@@ -61,22 +61,10 @@ def _get_base_llm_settings(model_name: str, model_parameters: Optional[Dict]) ->
 
     elif LLM_PROVIDER == LLMProviderType.RITS:
         rits_base_url = os.getenv("RITS_API_BASE_URL")
-        model_to_url_path = {
-            "mistralai/mixtral-8x22B-instruct-v0.1": "mixtral-8x22b-instruct-v01",
-            "Qwen/Qwen2.5-72B-Instruct": "qwen2-5-72b-instruct",
-            "meta-llama/llama-3-1-405b-instruct-fp8": "llama-3-1-405b-instruct-fp8",
-            "deepseek-ai/DeepSeek-V3": "deepseek-v3",
-            "meta-llama/llama-3-3-70b-instruct": "llama-3-3-70b-instruct",
-            "ibm-granite/granite-3.1-8b-instruct": "granite-3-1-8b-instruct",
-            "meta-llama/llama-4-maverick-17b-128e-instruct-fp8": "llama-4-mvk-17b-128e-fp8",
-            "meta-llama/Llama-4-Scout-17B-16E-Instruct": "llama-4-scout-17b-16e-instruct",
-        }
-        if model_name not in model_to_url_path:
-            model_to_url_path[model_name] = model_name
 
         parameters = {
             "max_tokens": model_parameters.get("max_tokens", 100),
-            "temperature": model_parameters.get("temperature", 0.9),
+            "temperature": model_parameters.get("temperature", 0.05),
             "repetition_penalty": model_parameters.get("repetition_penalty", 1.0),
             "top_k": model_parameters.get("top_k", 50),
             "top_p": model_parameters.get("top_p", 1.0),
@@ -84,12 +72,9 @@ def _get_base_llm_settings(model_name: str, model_parameters: Optional[Dict]) ->
         }
 
         return {
-            "base_url": f"{rits_base_url}/{model_to_url_path[model_name]}/v1",
+            "base_url": f"{rits_base_url}/v1",
             "model": model_name,
-            "api_key": "NotRequiredSinceWeAreLocal",
-            "default_headers": {
-                "RITS_API_KEY": os.getenv("RITS_API_KEY"),
-            },
+            "api_key": os.getenv("RITS_API_KEY"),
             "extra_body": parameters,
         }
 

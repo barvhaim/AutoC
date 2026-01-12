@@ -3,9 +3,11 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <excludeFolder url="file://$MODULE_DIR$/.venv" />
+      <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/api" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/backend" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="AutoC" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="uv (AutoC)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

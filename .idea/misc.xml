@@ -3,7 +3,7 @@
   <component name="Black">
     <option name="sdkName" value="autoc-oss" />
   </component>
-  <component name="ProjectRootManager" version="2" default="true" project-jdk-name="AutoC" project-jdk-type="Python SDK">
+  <component name="ProjectRootManager" version="2" default="true">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>
