@@ -9,7 +9,7 @@ FRONTEND_DIR := frontend
 .DEFAULT_GOAL := help
 
 # Phony targets (not actual files)
-.PHONY: help install setup dev dev-backend dev-frontend lint lint-frontend format format-frontend build-frontend clean clean-all extract
+.PHONY: help install setup dev dev-backend dev-frontend lint lint-frontend format format-backend format-frontend build-frontend clean clean-all extract
 
 # Help target - displays available commands
 help: ## Show this help message
@@ -63,8 +63,12 @@ lint-frontend: ## Run ESLint on frontend code
 	@echo "Running ESLint..."
 	cd $(FRONTEND_DIR) && npm run lint
 
-format: format-frontend ## Format all code
+format: format-backend format-frontend ## Format all code
 	@echo "Formatting complete!"
+
+format-backend: ## Run Black on Python code
+	@echo "Running Black..."
+	uv run black .
 
 format-frontend: ## Run Prettier on frontend code
 	@echo "Running Prettier..."
