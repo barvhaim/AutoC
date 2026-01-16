@@ -40,17 +40,22 @@ const MitreTTPs: React.FC<MitreTTPsProps> = ({ mitreTTPs }) => {
     <div>
       <div className={styles.mitre_ttps_container}>
         {mitreTTPs.map((ttp) => (
-          <Tag
-            type="warm-gray"
-            className={styles.ttp_tag}
-            onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-              e.preventDefault();
-              window.open(ttp.url, "_blank");
-            }}
+          <span
             key={ttp.id}
+            onClick={() => window.open(ttp.url, "_blank")}
+            style={{ cursor: "pointer" }}
+            role="link"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                window.open(ttp.url, "_blank");
+              }
+            }}
           >
-            {`${ttp.id}: ${ttp.name}`}
-          </Tag>
+            <Tag type="warm-gray" className={styles.ttp_tag}>
+              {`${ttp.id}: ${ttp.name}`}
+            </Tag>
+          </span>
         ))}
       </div>
       {mitreTTPs.length > 0 && (

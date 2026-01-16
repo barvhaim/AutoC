@@ -1,4 +1,4 @@
-import { IOCType } from "./consts.ts";
+import { IOCTypeBackend } from "./consts.ts";
 
 const toBase64Url = (input: string): string => {
   // Convert string to UTF-8 byte array
@@ -13,7 +13,7 @@ const toBase64Url = (input: string): string => {
 
 /**
  * Generates a VirusTotal URL for a given IOC type and value.
- * @param iocType - The type of IOC (URL, IP, MD5, SHA256)
+ * @param iocType - The type of IOC (backend type names like "SHA256 Hash", "IP Address")
  * @param iocValue - The value of the IOC
  * @returns The VirusTotal URL or an empty string if type is unsupported
  */
@@ -21,15 +21,19 @@ export const getVirusTotalUrl = (iocType: string, iocValue: string): string => {
   if (!iocType || !iocValue) return "";
   const baseUrl = "https://www.virustotal.com/gui/search/";
 
-  if (iocType === IOCType.URL) {
+  if (iocType === IOCTypeBackend.URL) {
     // Encode URL in base64url format as required by VirusTotal
     const base64Url = toBase64Url(iocValue);
     return `https://www.virustotal.com/gui/url/${base64Url}/detection`;
   }
 
   // Supported types that use the same search pattern
-  const supportedTypes = [IOCType.IP, IOCType.MD5, IOCType.SHA256];
-  if (supportedTypes.includes(iocType)) {
+  const supportedTypes = [
+    IOCTypeBackend.IP,
+    IOCTypeBackend.MD5,
+    IOCTypeBackend.SHA256,
+  ];
+  if (supportedTypes.includes(iocType as typeof IOCTypeBackend.IP)) {
     return `${baseUrl}${encodeURIComponent(iocValue)}`;
   }
 

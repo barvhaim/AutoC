@@ -8,12 +8,15 @@ interface IOCsTypeChartProps {
 }
 
 const IOCsTypeChart: React.FC<IOCsTypeChartProps> = ({ iocs }) => {
-  const IOCTypeCount = Object.fromEntries(
-    Object.keys(IOCType).map((type) => [type, 0]),
+  // Count IOCs by their short display name
+  const IOCTypeCount: Record<string, number> = Object.fromEntries(
+    Object.values(IOCType).map((displayName) => [displayName, 0]),
   );
   iocs.forEach(({ type }) => {
-    if (type in IOCType) {
-      IOCTypeCount[type]++;
+    // Map backend type (e.g., "SHA256 Hash") to display name (e.g., "SHA256")
+    const displayName = IOCType[type];
+    if (displayName) {
+      IOCTypeCount[displayName]++;
     }
   });
   const data = Object.entries(IOCTypeCount).map(([group, value]) => ({

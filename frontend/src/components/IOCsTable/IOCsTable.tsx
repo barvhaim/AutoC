@@ -130,13 +130,17 @@ const IOCsTable: React.FC<IOCsTableProps> = ({ iocs }) => {
           <Table {...getTableProps()} size={"sm"}>
             <TableHead>
               <TableRow>
-                {headers.map((header) => (
-                  <TableHeader
-                    {...getHeaderProps({ header, isSortable: true })}
-                  >
-                    {header.header}
-                  </TableHeader>
-                ))}
+                {headers.map((header) => {
+                  const { key, ...headerProps } = getHeaderProps({
+                    header,
+                    isSortable: true,
+                  });
+                  return (
+                    <TableHeader key={key} {...headerProps}>
+                      {header.header}
+                    </TableHeader>
+                  );
+                })}
                 <TableHeader className="cds--table-column-menu" />
               </TableRow>
             </TableHead>

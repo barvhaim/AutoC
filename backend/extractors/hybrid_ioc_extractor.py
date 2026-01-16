@@ -348,7 +348,9 @@ class HybridIOCExtractor:
         # Count validated IOCs
         for ioc in final_iocs:
             if ioc.validated_by_llm:
-                type_counts[ioc.type.value]["llm_validated"] += 1
+                # Handle both enum and string types (use_enum_values=True converts to string)
+                ioc_type = ioc.type.value if hasattr(ioc.type, "value") else ioc.type
+                type_counts[ioc_type]["llm_validated"] += 1
 
         # Build metrics objects
         metrics_list = []
