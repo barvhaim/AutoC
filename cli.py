@@ -1,6 +1,7 @@
 from typing import Optional
 import logging
 import sys
+
 """Command-line interface for AutoC threat intelligence analysis."""
 
 import json

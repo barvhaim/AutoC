@@ -105,7 +105,7 @@ class Crawl4AiHtmlParser:
             response = requests.post(
                 f"{self.crawl4ai_base_url}/crawl",
                 json=self._crawl4ai_payload(),
-                timeout=30
+                timeout=30,
             )
             response.raise_for_status()
             output = response.json()

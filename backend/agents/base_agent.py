@@ -65,14 +65,18 @@ class BaseAgent(ABC):
 
                 logger.info(
                     "Agent '%s' completed successfully in %.2fs",
-                    self.name, execution_time
+                    self.name,
+                    execution_time,
                 )
                 return result
 
             except Exception as e:
                 logger.error(
                     "Agent '%s' failed (attempt %s/%s): %s",
-                    self.name, attempt + 1, max_retries, str(e)
+                    self.name,
+                    attempt + 1,
+                    max_retries,
+                    str(e),
                 )
 
                 if attempt < max_retries - 1:
@@ -82,8 +86,7 @@ class BaseAgent(ABC):
                     time.sleep(wait_time)
                 else:
                     logger.error(
-                        "Agent '%s' failed after %s attempts",
-                        self.name, max_retries
+                        "Agent '%s' failed after %s attempts", self.name, max_retries
                     )
                     raise
 

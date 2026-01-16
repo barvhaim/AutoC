@@ -137,9 +137,7 @@ class QnaExtractor:
                     if isinstance(result, list):
                         return result
                     # Fallback to individual mode if batch parsing fails
-                    logger.warning(
-                        "Batch mode failed, falling back to individual mode"
-                    )
+                    logger.warning("Batch mode failed, falling back to individual mode")
                     return self._individual_qna()
                 except Exception as e:
                     logger.warning(

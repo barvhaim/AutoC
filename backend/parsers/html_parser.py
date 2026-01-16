@@ -53,7 +53,9 @@ class HtmlParser:
                 content_type = response.headers.get("Content-Type")
                 logger.info(
                     "Skipped: %s (status: %s, content-type: %s)",
-                    image_src, response.status_code, content_type
+                    image_src,
+                    response.status_code,
+                    content_type,
                 )
 
         # Load from base64 (optional enhancement)

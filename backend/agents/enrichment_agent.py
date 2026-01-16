@@ -72,7 +72,8 @@ class EnrichmentAgent(BaseAgent):
             if enriched_count < original_count:
                 logger.warning(
                     "Some IOCs were filtered during enrichment (%s -> %s)",
-                    original_count, enriched_count
+                    original_count,
+                    enriched_count,
                 )
 
             logger.info("Successfully enriched %s IOCs", enriched_count)

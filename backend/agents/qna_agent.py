@@ -66,7 +66,9 @@ class QnAAgent(BaseAgent):
 
         logger.info(
             "QnA agent processing %s questions (batch_mode=%s, rag_mode=%s)",
-            len(questions), batch_mode, rag_mode
+            len(questions),
+            batch_mode,
+            rag_mode,
         )
 
         try:
@@ -88,8 +90,8 @@ class QnAAgent(BaseAgent):
                 sample = qna_results[0]
                 logger.debug(
                     "Sample Q&A - Q: %s... A: %s...",
-                    sample.get('question', 'N/A')[:50],
-                    sample.get('answer', 'N/A')[:50]
+                    sample.get("question", "N/A")[:50],
+                    sample.get("answer", "N/A")[:50],
                 )
 
             return qna_results

@@ -34,7 +34,9 @@ def answer_questions_tool(
     try:
         logger.info(
             "Answering %s questions (batch_mode=%s, rag_mode=%s)",
-            len(questions), batch_mode, rag_mode
+            len(questions),
+            batch_mode,
+            rag_mode,
         )
 
         extractor = QnaExtractor(

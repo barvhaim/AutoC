@@ -58,7 +58,8 @@ class MITREAgent(BaseAgent):
 
         logger.info(
             "MITRE agent classifying content (top_k=%s, with_qna=%s)",
-            top_k, len(qna) > 0
+            top_k,
+            len(qna) > 0,
         )
 
         try:
@@ -81,7 +82,9 @@ class MITREAgent(BaseAgent):
                 for ttp in mitre_ttps[:3]:  # Log first 3
                     technique_id = ttp.get("technique_id", "Unknown")
                     technique_name = ttp.get("technique_name", "Unknown")
-                    logger.debug("Classified TTP: %s - %s", technique_id, technique_name)
+                    logger.debug(
+                        "Classified TTP: %s - %s", technique_id, technique_name
+                    )
 
             return mitre_ttps
 

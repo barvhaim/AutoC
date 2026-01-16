@@ -78,7 +78,8 @@ class QnaRAG:
         try:
             logger.info(
                 "Searching collection '%s' for: %s...",
-                self.vector_store.collection_name, query[:50]
+                self.vector_store.collection_name,
+                query[:50],
             )
 
             # Try similarity search with score
@@ -130,8 +131,7 @@ class QnaRAG:
                     )
 
             logger.info(
-                "Found %s results for query: %s...",
-                len(formatted_results), query[:50]
+                "Found %s results for query: %s...", len(formatted_results), query[:50]
             )
             return formatted_results
 
