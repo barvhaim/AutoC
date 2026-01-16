@@ -1,9 +1,11 @@
+"""Content relevancy scoring module."""
+
 import json
 from typing import List, Dict
 
 
 def _get_total_keywords_length() -> int:
-    with open("config.json") as f:
+    with open("config.json", encoding="utf-8") as f:
         config = json.load(f)
         keywords = list(set(config["keywords"]))
     return len(keywords)

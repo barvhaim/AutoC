@@ -1,13 +1,14 @@
 """Given analyst question and article content, answer the question"""
 
-from dotenv import load_dotenv
-import os
-import logging
-from typing import List, Any, Dict, Optional
 import json
+import logging
+import os
+from typing import Any, Dict, List
+
+from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage
-from langchain_core.runnables import RunnableParallel, RunnableSequence
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
+from langchain_core.runnables import RunnableParallel, RunnableSequence
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
 from backend.prompts import get_prompts
 from backend.llm import get_chat_llm_client
@@ -56,7 +57,7 @@ class QnaExtractor:
 
     @staticmethod
     def _load_analyst_questions() -> List[str]:
-        with open("config.json") as f:
+        with open("config.json", encoding="utf-8") as f:
             config = json.load(f)
             questions = config.get("analyst_questions", [])
         return questions

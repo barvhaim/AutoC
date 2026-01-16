@@ -1,10 +1,13 @@
+"""Crawl4AI-based HTML parser for web content extraction."""
+
 import logging
-from dotenv import load_dotenv
-from typing import Optional
-from urllib.parse import urlparse
-import requests
 import os
 import re
+from typing import Optional
+from urllib.parse import urlparse
+
+import requests
+from dotenv import load_dotenv
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -100,7 +103,9 @@ class Crawl4AiHtmlParser:
     def get_textual_content(self) -> Optional[str]:
         try:
             response = requests.post(
-                f"{self.crawl4ai_base_url}/crawl", json=self._crawl4ai_payload()
+                f"{self.crawl4ai_base_url}/crawl",
+                json=self._crawl4ai_payload(),
+                timeout=30
             )
             response.raise_for_status()
             output = response.json()

@@ -1,3 +1,5 @@
+"""FastAPI server implementation for AutoC threat intelligence API."""
+
 import logging
 from pathlib import Path
 from fastapi import FastAPI, APIRouter, HTTPException

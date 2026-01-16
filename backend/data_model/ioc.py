@@ -1,5 +1,7 @@
-from typing import List
+"""IOC data models and type definitions."""
+
 from enum import Enum
+
 from pydantic import BaseModel
 
 

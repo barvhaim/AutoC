@@ -1,5 +1,9 @@
-from dotenv import load_dotenv
+"""Main entry point for AutoC API server."""
+
 import logging
+
+from dotenv import load_dotenv
+
 from api.server import app
 
 logging.basicConfig(level=logging.INFO)

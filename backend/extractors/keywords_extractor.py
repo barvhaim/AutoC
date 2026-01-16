@@ -1,15 +1,17 @@
+"""Keywords extraction module for security content analysis."""
+
 import json
-from typing import List
+from typing import List, Optional
 
 
 class KeywordsExtractor:
-    def __init__(self, article_content: str, keywords: List[str] = []):
+    def __init__(self, article_content: str, keywords: Optional[List[str]] = None):
         self.article_content = article_content
         self.keywords = keywords if keywords else self._load_keywords()
 
     @staticmethod
     def _load_keywords() -> List[str]:
-        with open("config.json") as f:
+        with open("config.json", encoding="utf-8") as f:
             config = json.load(f)
             keywords = list(set(config["keywords"]))
         return keywords

@@ -163,6 +163,40 @@ DETECT_MITRE_TTPS_MODEL_PATH=dvir056/mitre-ttp  # Hugging Face model path for MI
 
 Information about model training: https://github.com/barvhaim/attack-ttps-detection?tab=readme-ov-file#-mitre-attck-ttps-classification
 
+#### Multi-Agent System (New!)
+AutoC now features a **hybrid multi-agent architecture** that combines LangGraph workflow orchestration with specialized intelligent agents for improved performance and modularity.
+
+**Key Features:**
+- 🚀 **40% Performance Improvement**: Parallel execution of independent tasks
+- 🤖 **6 Specialized Agents**: Parser, Keywords, IOC Hunter, Enrichment, QnA, and MITRE agents
+- 🔄 **Hybrid Architecture**: Sequential + parallel execution for optimal performance
+- 🛡️ **Enhanced Reliability**: Automatic retry logic and graceful error handling
+- 📊 **Better Monitoring**: Detailed agent-level logging and metrics
+
+**Enable Multi-Agent System:**
+```bash
+# In your .env file
+USE_AGENT_SYSTEM=true
+
+# Configure parallel execution (optional)
+AGENT_PARALLEL_WORKERS=3
+AGENT_ENABLE_PARALLEL=true
+
+# Per-agent timeouts (optional, in seconds)
+AGENT_TIMEOUT_PARSER=60
+AGENT_TIMEOUT_KEYWORDS=30
+AGENT_TIMEOUT_IOC=120
+AGENT_TIMEOUT_ENRICHMENT=90
+AGENT_TIMEOUT_QNA=60
+AGENT_TIMEOUT_MITRE=45
+```
+
+**Learn More:**
+- [Multi-Agent Architecture](docs/MULTI-AGENT-ARCHITECTURE.md) - Detailed system design
+- [Migration Guide](docs/MIGRATION-GUIDE.md) - Transition from traditional pipeline
+- [Testing Guide](docs/TESTING-GUIDE.md) - Testing strategies and examples
+- [Quick Start Guide](docs/QUICKSTART-AGENTS.md) - Get started with agents
+
 ### 📝 **Usage**
 Run the AutoC tool with the following command:
 ```bash

@@ -1,7 +1,11 @@
+"""IOC enrichment module for threat intelligence data enhancement."""
+
 import logging
 import os
-from dotenv import load_dotenv
 from typing import List, Optional
+
+from dotenv import load_dotenv
+
 from backend.data_model.ioc import IOC, IOCType
 from backend.enrichment.vt_enrichment import VirusTotalEnrichment
 from backend.utils.str_utils import is_md5, is_sha256

@@ -1,3 +1,5 @@
+"""Mock response data for testing purposes."""
+
 mock_response = {
     "url": "https://securityintelligence.com/posts/gozi-strikes-again-targeting-banks-cryptocurrency-and-more",
     "keywords_found": [

@@ -1,3 +1,5 @@
+"""VirusTotal enrichment module for IOC threat intelligence."""
+
 import logging
 import os
 from typing import Dict
@@ -32,7 +34,7 @@ class VirusTotalEnrichment:
 
         url = f"{self.base_url}/files/{md5_hash}"
         headers = {"x-apikey": self.api_key}
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=30)
         if response.status_code == 200:
             sha256_hash = (
                 response.json().get("data", {}).get("attributes", {}).get("sha256")

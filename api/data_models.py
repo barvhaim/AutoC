@@ -1,5 +1,8 @@
-from pydantic import BaseModel, HttpUrl
+"""API data models for request and response schemas."""
+
 from typing import List, Optional
+
+from pydantic import BaseModel, HttpUrl
 
 
 class AnalyzeRequest(BaseModel):

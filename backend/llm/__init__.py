@@ -1,3 +1,5 @@
+"""LLM client initialization and configuration module."""
+
 import os
 from typing import Dict, Optional, Any
 from dotenv import load_dotenv

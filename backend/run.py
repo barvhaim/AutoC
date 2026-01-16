@@ -1,7 +1,11 @@
+"""Main execution module for AutoC threat intelligence analysis."""
+
 import logging
+import os
 from typing import Optional, Any, List
 from dotenv import load_dotenv
 from backend.pipeline.graph import build_graph
+from backend.pipeline.agent_graph import build_agent_graph
 from backend.scoring.relevancy import get_positive_qna
 
 load_dotenv()
@@ -13,11 +17,20 @@ logger = logging.getLogger(__name__)
 def run(
     url: Optional[str] = None,
     ping: bool = False,
-    keywords: List[str] = [],
-    analyst_questions: List[str] = [],
+    keywords: Optional[List[str]] = None,
+    analyst_questions: Optional[List[str]] = None,
     raw_text: Optional[str] = None,
 ) -> Any:
-    graph = build_graph()
+    # Choose graph based on configuration
+    use_agents = os.getenv("AGENT_SYSTEM_ENABLED", "false").lower() == "true"
+
+    if use_agents:
+        logger.info("🤖 Using agent-based pipeline with parallel execution")
+        graph = build_agent_graph()
+    else:
+        logger.info("📊 Using traditional sequential pipeline")
+        graph = build_graph()
+
     inputs = {
         "url": url,
         "settings": {
@@ -33,11 +46,11 @@ def run(
         "error": None,
     }
 
-    logger.info(f"🕵🏼‍ Analyzing url: {url}")
+    logger.info("🕵🏼‍ Analyzing url: %s", url)
     res = graph.invoke(input=inputs)
 
     if res.get("error"):
-        logger.error(f"Error: {res.get('error')}")
+        logger.error("Error: %s", res.get('error'))
         raise Exception(res.get("error"))
 
     article = res.get("article_textual_content")
@@ -68,6 +81,6 @@ def run(
 if __name__ == "__main__":
     _url = "https://www.uperesia.com/how-trickbot-tricks-its-victims"
     _res = run(_url)
-    logger.info(f"🔍Keywords found: {_res.get('keywords_found')}")
-    logger.info(f"📝 QnA: {_res.get('qna')}")
-    logger.info(f"🔍Total IoCs found: {len(_res.get('iocs_found'))}")
+    logger.info("🔍Keywords found: %s", _res.get('keywords_found'))
+    logger.info("📝 QnA: %s", _res.get('qna'))
+    logger.info("🔍Total IoCs found: %s", len(_res.get('iocs_found')))

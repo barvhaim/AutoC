@@ -1,3 +1,5 @@
+"""MCP (Model Context Protocol) server implementation for AutoC."""
+
 from mcp.server.fastmcp import FastMCP
 from backend.run import run
 

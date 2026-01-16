@@ -1,11 +1,14 @@
-import os
-import torch
+"""MITRE ATT&CK TTP classification module using ML models."""
+
 import json
-import joblib
-from transformers import BertTokenizer
+import os
 from typing import List, Optional
+
+import joblib
+import torch
 from huggingface_hub import hf_hub_download
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from transformers import BertTokenizer
 
 
 class MitreTTPClassifierExtractor:

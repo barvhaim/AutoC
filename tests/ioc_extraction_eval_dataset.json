@@ -1,0 +1,113 @@
+{
+  "description": "Evaluation dataset for IOC extraction from IBM banking trojan article",
+  "source_url": "https://www.ibm.com/think/insights/unveiling-latest-banking-trojan-threats-latam",
+  "test_cases": [
+    {
+      "id": "url_test_1",
+      "ioc_type": "URL",
+      "content": "The malware communicates with its C2 server at hxxps://dlxfreights.site/uadmin/gate.php to exfiltrate stolen credentials.",
+      "expected_iocs": [
+        "hxxps://dlxfreights.site/uadmin/gate.php"
+      ]
+    },
+    {
+      "id": "url_test_2",
+      "ioc_type": "URL",
+      "content": "Multiple C2 endpoints were identified including hxxps://facturacionmx.autos/api, hxxps://facturamexico2023.com/api, and hxxps://russk22.icu for command and control operations.",
+      "expected_iocs": [
+        "hxxps://facturacionmx.autos/api",
+        "hxxps://facturamexico2023.com/api",
+        "hxxps://russk22.icu"
+      ]
+    },
+    {
+      "id": "url_test_3",
+      "ioc_type": "URL",
+      "content": "The campaign also uses hxxps://jogjaempatroda.com as an additional C2 infrastructure.",
+      "expected_iocs": [
+        "hxxps://jogjaempatroda.com"
+      ]
+    },
+    {
+      "id": "ip_test_1",
+      "ioc_type": "IP",
+      "content": "The malware connects to IP address 192.168.1.100 and 10.0.0.5 for data exfiltration.",
+      "expected_iocs": [
+        "192.168.1.100",
+        "10.0.0.5"
+      ]
+    },
+    {
+      "id": "ip_test_2",
+      "ioc_type": "IP",
+      "content": "Network traffic analysis revealed connections to 203.0.113.42 and IPv6 address 2001:db8::1.",
+      "expected_iocs": [
+        "203.0.113.42",
+        "2001:db8::1"
+      ]
+    },
+    {
+      "id": "md5_test_1",
+      "ioc_type": "MD5",
+      "content": "The malicious file has MD5 hash 5d41402abc4b2a76b9719d911017c592.",
+      "expected_iocs": [
+        "5d41402abc4b2a76b9719d911017c592"
+      ]
+    },
+    {
+      "id": "md5_test_2",
+      "ioc_type": "MD5",
+      "content": "Multiple samples were identified with MD5 hashes: 098f6bcd4621d373cade4e832627b4f6 and d41d8cd98f00b204e9800998ecf8427e.",
+      "expected_iocs": [
+        "098f6bcd4621d373cade4e832627b4f6",
+        "d41d8cd98f00b204e9800998ecf8427e"
+      ]
+    },
+    {
+      "id": "sha256_test_1",
+      "ioc_type": "SHA256",
+      "content": "The dropper has SHA256 hash e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.",
+      "expected_iocs": [
+        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      ]
+    },
+    {
+      "id": "sha256_test_2",
+      "ioc_type": "SHA256",
+      "content": "Analysis revealed SHA256: 2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae for the payload.",
+      "expected_iocs": [
+        "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"
+      ]
+    },
+    {
+      "id": "chrome_ext_test_1",
+      "ioc_type": "CHROME_EXTENSION",
+      "content": "The malicious Chrome extension ID is abcdefghijklmnopqrstuvwxyz123456.",
+      "expected_iocs": [
+        "abcdefghijklmnopqrstuvwxyz123456"
+      ]
+    },
+    {
+      "id": "mixed_test_1",
+      "ioc_type": "URL",
+      "content": "The banking trojan campaign uses multiple infrastructure components. The primary C2 server is located at hxxps://dlxfreights.site/uadmin/gate.php, with backup servers at hxxps://facturacionmx.autos/api and hxxps://russk22.icu. The malware also connects to IP addresses 192.168.1.100 and 203.0.113.42 for data exfiltration.",
+      "expected_iocs": [
+        "hxxps://dlxfreights.site/uadmin/gate.php",
+        "hxxps://facturacionmx.autos/api",
+        "hxxps://russk22.icu"
+      ]
+    },
+    {
+      "id": "empty_test_1",
+      "ioc_type": "URL",
+      "content": "This is a generic security blog post about malware trends without any specific indicators of compromise.",
+      "expected_iocs": []
+    },
+    {
+      "id": "empty_test_2",
+      "ioc_type": "IP",
+      "content": "The article discusses general cybersecurity best practices and threat landscape overview.",
+      "expected_iocs": []
+    }
+  ]
+}

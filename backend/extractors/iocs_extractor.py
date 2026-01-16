@@ -1,13 +1,14 @@
 """Given an article, extract IOCs from the content"""
 
-import os
-from dotenv import load_dotenv
 import logging
-from typing import List, Any
-from langchain_core.runnables import RunnableParallel, RunnableSequence
-from langchain_core.messages import HumanMessage, AIMessage
-from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
+import os
+from typing import Any, List
+
+from dotenv import load_dotenv
+from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.output_parsers import JsonOutputParser
+from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate
+from langchain_core.runnables import RunnableParallel, RunnableSequence
 from backend.prompts import get_prompts
 from backend.llm import get_chat_llm_client
 from backend.data_model.ioc import IOC, IOCType
@@ -37,8 +38,32 @@ class IOCsExtractor:
 
     @staticmethod
     def _json_escaping(response: AIMessage) -> AIMessage:
+        """Clean and prepare LLM response for JSON parsing"""
         content = response.content
+        original_content = content  # Keep for debugging
+
+        # Remove markdown code blocks if present
+        if content.startswith("```"):
+            # Remove opening code block
+            content = content.split("\n", 1)[1] if "\n" in content else content[3:]
+            # Remove closing code block
+            if content.endswith("```"):
+                content = (
+                    content.rsplit("\n", 1)[0] if "\n" in content else content[:-3]
+                )
+
+        # Strip whitespace
+        content = content.strip()
+
+        # Log the cleaned content for debugging
+        if content != original_content:
+            logger.debug(
+                f"Cleaned LLM response from:\n{original_content[:200]}...\nto:\n{content[:200]}..."
+            )
+
+        # Handle escaped backslashes
         content = content.replace("\\", "\\\\")
+
         return AIMessage(content=content)
 
     @staticmethod
@@ -54,7 +79,8 @@ class IOCsExtractor:
                 "context": self.article_content,
             },
         )
-        user_message = HumanMessage(content="LIST_OF_IOCS:")
+        # More explicit user message to reinforce JSON-only output
+        user_message = HumanMessage(content="Output the JSON array now:")
         messages = [system_message, user_message]
 
         prompt = ChatPromptTemplate.from_messages(messages=messages)
@@ -62,7 +88,7 @@ class IOCsExtractor:
         return (
             prompt
             | llm
-            | (lambda x: self._json_escaping(x))
+            | self._json_escaping
             | JsonOutputParser()
             | (lambda x: self._response_to_iocs(x, ioc_type))
         )

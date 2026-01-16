@@ -1,6 +1,10 @@
 from typing import Optional
 import logging
 import sys
+"""Command-line interface for AutoC threat intelligence analysis."""
+
+import json
+from pathlib import Path
 from datetime import datetime
 import click
 from rich.console import Console
@@ -13,10 +17,10 @@ from backend.run import run
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("cli")
 
-auto_c_logo = """     _         _         ____ 
+auto_c_logo = r"""     _         _         ____
     / \  _   _| |_ ___  / ___|
-   / _ \| | | | __/ _ \| |    
-  / ___ \ |_| | || (_) | |___ 
+   / _ \| | | | __/ _ \| |
+  / ___ \ |_| | || (_) | |___
  /_/   \_\__,_|\__\___/ \____|
  """
 
@@ -119,6 +123,20 @@ def _display_results(console: Console, res: dict, url: str):
         console.print("No MITRE ATT&CK TTPs detected\n")
 
 
+def _load_config() -> dict:
+    """Load configuration from config.json"""
+    config_path = Path(__file__).parent / "config.json"
+    try:
+        with open(config_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        logger.warning(f"Config file not found at {config_path}, using empty config")
+        return {"keywords": [], "analyst_questions": []}
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse config.json: {e}")
+        return {"keywords": [], "analyst_questions": []}
+
+
 @click.group()
 def cli():
     """AutoC is a framework for Automated IoCs extraction."""
@@ -133,7 +151,17 @@ def extract(url: Optional[str]):
         _display_header(console=console)
         if not url:
             url = input("Enter the URL of the blog post: ")
-        res = run(url=url)
+
+        # Load config for keywords and analyst questions
+        config = _load_config()
+        keywords = config.get("keywords", [])
+        analyst_questions = config.get("analyst_questions", [])
+
+        logger.info(
+            f"Loaded {len(keywords)} keywords and {len(analyst_questions)} analyst questions from config"
+        )
+
+        res = run(url=url, keywords=keywords, analyst_questions=analyst_questions)
         _display_results(console=console, res=res, url=url)
     except Exception as e:
         logger.error(f"Error: {str(e)}")

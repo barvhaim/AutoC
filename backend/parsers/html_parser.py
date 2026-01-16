@@ -1,17 +1,20 @@
+"""HTML parser module for extracting content from web pages and PDFs."""
+
 import base64
-import multiprocessing
-from typing import Optional
-from itertools import chain
-from PIL import Image
-import pytesseract
-from io import BytesIO
 import logging
+import multiprocessing
 import re
+from io import BytesIO
+from itertools import chain
+from typing import Optional
+from urllib.parse import urljoin
+
 import docling.exceptions
-from docling.document_converter import DocumentConverter
+import pytesseract
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+from docling.document_converter import DocumentConverter
+from PIL import Image
 
 
 logging.basicConfig(level=logging.INFO)

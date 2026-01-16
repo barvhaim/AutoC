@@ -36,6 +36,9 @@ dependencies = [
     "langsmith>=0.3.42",
     "pymilvus>=2.5.11",
     "langchain-milvus>=0.2.1",
+    # multi-agent system
+    "crewai>=0.80.0",
+    "crewai-tools>=0.12.0",
 ]
 
 [tool.ruff]
@@ -45,4 +48,9 @@ target-version = "py311"
 [tool.uv.workspace]
 members = [
     "research",
+]
+
+[dependency-groups]
+dev = [
+    "pylint>=4.0.4",
 ]
