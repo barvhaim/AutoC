@@ -42,7 +42,7 @@ class QnAAgent(BaseAgent):
             task_description: Description of the task
             context: Must contain:
                 - 'content': Text to analyze
-                - 'questions': List of questions to answer
+                - 'questions': List of questions to answer (if empty, loads from config)
                 - 'batch_mode': (optional) Whether to use batch processing
                 - 'rag_mode': (optional) Whether to use RAG for context retrieval
 
@@ -60,8 +60,24 @@ class QnAAgent(BaseAgent):
         if not content:
             raise ValueError("Content is required for Q&A")
 
+        # Load default questions from config if none provided
         if not questions:
-            logger.warning("No questions provided, returning empty results")
+            logger.info("No questions provided, loading default questions from config")
+            import json
+
+            try:
+                with open("config.json", encoding="utf-8") as f:
+                    config = json.load(f)
+                    questions = config.get("analyst_questions", [])
+                    logger.info(
+                        f"Loaded {len(questions)} default questions from config"
+                    )
+            except Exception as e:
+                logger.error(f"Failed to load default questions: {str(e)}")
+                return []
+
+        if not questions:
+            logger.warning("No questions available after loading defaults")
             return []
 
         logger.info(

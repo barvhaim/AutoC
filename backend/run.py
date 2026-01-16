@@ -73,14 +73,8 @@ def run(
         "iocs_found": [
             # Handle both dict and Pydantic model formats
             {
-                "type": (
-                    ioc["type"]
-                    if isinstance(ioc, dict)
-                    else ioc.model_dump()["type"].name
-                ),
-                "value": (
-                    ioc["value"] if isinstance(ioc, dict) else ioc.model_dump()["value"]
-                ),
+                "type": (ioc["type"] if isinstance(ioc, dict) else ioc.type.name),
+                "value": (ioc["value"] if isinstance(ioc, dict) else ioc.value),
             }
             for ioc in iocs
         ],

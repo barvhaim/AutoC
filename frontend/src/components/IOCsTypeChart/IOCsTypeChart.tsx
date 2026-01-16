@@ -12,7 +12,9 @@ const IOCsTypeChart: React.FC<IOCsTypeChartProps> = ({ iocs }) => {
     Object.keys(IOCType).map((type) => [type, 0]),
   );
   iocs.forEach(({ type }) => {
-    if (type in IOCType) IOCTypeCount[type]++;
+    if (type in IOCType) {
+      IOCTypeCount[type]++;
+    }
   });
   const data = Object.entries(IOCTypeCount).map(([group, value]) => ({
     group,

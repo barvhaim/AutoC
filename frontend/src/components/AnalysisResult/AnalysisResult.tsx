@@ -82,7 +82,7 @@ const AnalysisResult: React.FC<AnalysisResultProps> = ({ analysisResult }) => {
               <div className={styles.card_container}>
                 <div className={styles.card_content}>
                   <div className={styles.card_title}>
-                    🤔 Questions & Answers
+                    🤔 Questions & Answers ({qna.length})
                   </div>
                   <QnA qna={qna} />
                 </div>

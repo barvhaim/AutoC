@@ -19,6 +19,43 @@ logger = logging.getLogger(__name__)
 
 
 class IOCsExtractor:
+    # IOC type definitions for prompt generation
+    # Maps IOCType enum to detailed extraction instructions
+    IOC_DEFINITIONS = {
+        IOCType.URL: """<Domain or URL>
+Full or obfuscated web addresses (URLs, domains, or hostnames)
+Examples: https://example.com, hxxps://bad[.]com, malicious.net, evil[.]com
+MUST contain domain names or URL patterns
+MUST NOT be plain IP addresses (no 192.168.1.1 format)
+</Domain or URL>""",
+        IOCType.IP: """<IP Address>
+ONLY IPv4 or IPv6 addresses in numeric format
+Examples: 192.168.1.1, 10.0.0.1, 2001:0db8:85a3::8a2e:0370:7334
+MUST be numeric IP addresses only
+MUST NOT include URLs, domains, or hostnames
+</IP Address>""",
+        IOCType.MD5: """<MD5 Hash>
+ONLY 32-character hexadecimal hashes
+Example: 5d41402abc4b2a76b9719d911017c592
+Must be exactly 32 hex characters (0-9, a-f)
+</MD5 Hash>""",
+        IOCType.SHA256: """<SHA256 Hash>
+ONLY 64-character hexadecimal hashes
+Example: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+Must be exactly 64 hex characters (0-9, a-f)
+</SHA256 Hash>""",
+        IOCType.CHROME_EXTENSION: """<Chrome Extension ID>
+ONLY Chrome extension IDs (32-character lowercase alphanumeric)
+Example: cjpalhdlnbpafiamejdnhcphjbkeiagm
+Must be exactly 32 characters, lowercase letters and numbers only
+</Chrome Extension ID>""",
+        IOCType.BITCOIN_WALLET_ADDRESS: """<Bitcoin Wallet Address>
+ONLY Bitcoin wallet addresses (26-35 alphanumeric characters)
+Example: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+Typically starts with 1, 3, or bc1
+</Bitcoin Wallet Address>""",
+    }
+
     def __init__(self, article_content: str):
         self.article_content = article_content
         self.prompts = get_prompts()
@@ -76,10 +113,17 @@ class IOCsExtractor:
 
     def _extract_ioc(self, ioc_type: IOCType) -> RunnableSequence:
         llm = self._llm()
+
+        # Get the definition for this IOC type
+        ioc_definition = self.IOC_DEFINITIONS.get(
+            ioc_type, f"Extract {ioc_type.value} indicators"
+        )
+
         system_message = SystemMessagePromptTemplate.from_template(
             template=self.prompts["iocs"]["system"],
             partial_variables={
                 "ioc_type": ioc_type.value,
+                "ioc_definition": ioc_definition,
                 "context": self.article_content,
             },
         )
