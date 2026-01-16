@@ -54,7 +54,7 @@ class IOCHunterAgent(BaseAgent):
         if not content:
             raise ValueError("Content is required for IOC extraction")
 
-        logger.info(f"IOC Hunter agent analyzing content ({len(content)} chars)")
+        logger.info("IOC Hunter agent analyzing content (%s chars)", len(content))
 
         try:
             iocs = extract_iocs_tool(content)
@@ -63,7 +63,7 @@ class IOCHunterAgent(BaseAgent):
                 logger.warning("No IOCs found in content")
                 return []
 
-            logger.info(f"Extracted {len(iocs)} IOCs")
+            logger.info("Extracted %s IOCs", len(iocs))
 
             # Log IOC type distribution
             ioc_types = {}
@@ -71,12 +71,12 @@ class IOCHunterAgent(BaseAgent):
                 ioc_type = ioc.get("type", "Unknown")
                 ioc_types[ioc_type] = ioc_types.get(ioc_type, 0) + 1
 
-            logger.info(f"IOC distribution: {ioc_types}")
+            logger.info("IOC distribution: %s", ioc_types)
 
             return iocs
 
         except Exception as e:
-            logger.error(f"IOC extraction failed: {str(e)}")
+            logger.error("IOC extraction failed: %s", str(e))
             raise
 
 

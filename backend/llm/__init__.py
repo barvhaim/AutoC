@@ -30,7 +30,7 @@ def _get_base_llm_settings(model_name: str, model_parameters: Optional[Dict]) ->
             **parameters,
         }
 
-    elif LLM_PROVIDER == LLMProviderType.OPENAI:
+    if LLM_PROVIDER == LLMProviderType.OPENAI:
         parameters = {
             "max_tokens": model_parameters.get("max_tokens", 100),
             "temperature": model_parameters.get("temperature", 0),
@@ -42,7 +42,7 @@ def _get_base_llm_settings(model_name: str, model_parameters: Optional[Dict]) ->
             **parameters,
         }
 
-    elif LLM_PROVIDER == LLMProviderType.WATSONX:
+    if LLM_PROVIDER == LLMProviderType.WATSONX:
         parameters = {
             "max_new_tokens": model_parameters.get("max_tokens", 100),
             "decoding_method": model_parameters.get("decoding_method", "greedy"),
@@ -96,7 +96,7 @@ def get_chat_llm_client(
             )
         )
 
-    elif LLM_PROVIDER == LLMProviderType.WATSONX:
+    if LLM_PROVIDER == LLMProviderType.WATSONX:
         from langchain_ibm import ChatWatsonx
 
         return ChatWatsonx(
@@ -105,7 +105,7 @@ def get_chat_llm_client(
             )
         )
 
-    elif LLM_PROVIDER == LLMProviderType.OLLAMA:
+    if LLM_PROVIDER == LLMProviderType.OLLAMA:
         from langchain_ollama import ChatOllama
 
         return ChatOllama(

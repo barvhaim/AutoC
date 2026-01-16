@@ -22,7 +22,10 @@ class QnaRAG:
             embedding_function=get_embeddings_client(),
             collection_name=collection_name,
             connection_args={
-                "uri": f"http://{os.getenv('RAG_MILVUS_HOST', 'localhost')}:{os.getenv('RAG_MILVUS_PORT', '19530')}",
+                "uri": (
+                    f"http://{os.getenv('RAG_MILVUS_HOST', 'localhost')}:"
+                    f"{os.getenv('RAG_MILVUS_PORT', '19530')}"
+                ),
                 "user": os.getenv("RAG_MILVUS_USER", ""),
                 "password": os.getenv("RAG_MILVUS_PASSWORD", ""),
                 "secure": os.getenv("RAG_MILVUS_SECURE", "false").lower() == "true",
@@ -35,7 +38,7 @@ class QnaRAG:
 
         # Generate hash of the article content
         article_hash = hashlib.sha256(self.article_content.encode("utf-8")).hexdigest()
-        logger.info(f"Article hash: {article_hash}")
+        logger.info("Article hash: %s", article_hash)
 
         headers_to_split_on = [
             ("#", "h1"),
@@ -51,20 +54,20 @@ class QnaRAG:
             logger.warning("No document chunks created from content")
             raise ValueError("No document chunks created from content")
 
-        logger.info(f"Split to {len(chunks)} document chunks")
+        logger.info("Split to %s document chunks", len(chunks))
 
         # Add article hash to each chunk's metadata
         for chunk in chunks:
             chunk.metadata["article_hash"] = article_hash
 
         try:
-            logger.info(f"Attempting to index {len(chunks)} documents...")
+            logger.info("Attempting to index %s documents...", len(chunks))
 
             self.vector_store.add_documents(documents=chunks)
             logger.info("Documents added successfully")
 
         except Exception as e:
-            logger.error(f"Error adding documents: {e}")
+            logger.error("Error adding documents: %s", e)
             raise
 
         logger.info("Content indexed successfully")
@@ -74,13 +77,14 @@ class QnaRAG:
         """Search for similar content in the vector store"""
         try:
             logger.info(
-                f"Searching collection '{self.vector_store.collection_name}' for: {query[:50]}..."
+                "Searching collection '%s' for: %s...",
+                self.vector_store.collection_name, query[:50]
             )
 
             # Try similarity search with score
             try:
                 results = self.vector_store.similarity_search_with_score(query, k=k)
-                logger.info(f"Raw search with score returned {len(results)} results")
+                logger.info("Raw search with score returned %s results", len(results))
 
                 # Format results
                 formatted_results = []
@@ -102,11 +106,11 @@ class QnaRAG:
 
             except Exception as e1:
                 logger.warning(
-                    f"similarity_search_with_score failed: {e1}, trying basic search"
+                    "similarity_search_with_score failed: %s, trying basic search", e1
                 )
                 # Fallback to basic similarity search
                 results = self.vector_store.similarity_search(query, k=k)
-                logger.info(f"Raw basic search returned {len(results)} results")
+                logger.info("Raw basic search returned %s results", len(results))
 
                 formatted_results = []
                 for doc in results:
@@ -126,10 +130,11 @@ class QnaRAG:
                     )
 
             logger.info(
-                f"Found {len(formatted_results)} results for query: {query[:50]}..."
+                "Found %s results for query: %s...",
+                len(formatted_results), query[:50]
             )
             return formatted_results
 
         except Exception as e:
-            logger.error(f"Error during search: {e}")
+            logger.error("Error during search: %s", e)
             return []

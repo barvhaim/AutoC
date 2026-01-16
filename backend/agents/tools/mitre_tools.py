@@ -43,7 +43,7 @@ def classify_mitre_ttps_tool(
             logger.info("MITRE TTP classification not configured (no model path)")
             return None
 
-        logger.info(f"Classifying content for MITRE TTPs (top_k={top_k})")
+        logger.info("Classifying content for MITRE TTPs (top_k=%s)", top_k)
 
         extractor = MitreTTPClassifierExtractor(
             article_content=content, model_repo=model_path, qna=qna or [], top_k=top_k
@@ -52,14 +52,14 @@ def classify_mitre_ttps_tool(
         mitre_ttps = extractor.classify()
 
         if mitre_ttps:
-            logger.info(f"Classified {len(mitre_ttps)} MITRE TTPs")
+            logger.info("Classified %s MITRE TTPs", len(mitre_ttps))
         else:
             logger.warning("No MITRE TTPs classified")
 
         return mitre_ttps
 
     except Exception as e:
-        logger.error(f"MITRE TTP classification failed: {str(e)}")
+        logger.error("MITRE TTP classification failed: %s", str(e))
         raise
 
 

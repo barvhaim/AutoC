@@ -32,7 +32,11 @@ class HtmlParser:
         self.converter = DocumentConverter()
         self.use_ocr: bool = use_ocr
         self.headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/58.0.3029.110 Safari/537.3"
+            )
         }
 
     def extract_text_from_image(self, image_src: str) -> str:
@@ -48,7 +52,8 @@ class HtmlParser:
             else:
                 content_type = response.headers.get("Content-Type")
                 logger.info(
-                    f"Skipped: {image_src} (status: {response.status_code}, content-type: {content_type})"
+                    "Skipped: %s (status: %s, content-type: %s)",
+                    image_src, response.status_code, content_type
                 )
 
         # Load from base64 (optional enhancement)
@@ -60,7 +65,7 @@ class HtmlParser:
             response = requests.get(urljoin(self.url, image_src), timeout=10)
             img = Image.open(BytesIO(response.content))
         else:
-            logger.info(f"Unsupported image src format: {image_src}")
+            logger.info("Unsupported image src format: %s", image_src)
 
         # OCR on the image
         text = pytesseract.image_to_string(img)
@@ -100,7 +105,7 @@ class HtmlParser:
                 text = self.extract_text_from_image(image_src=src)
                 res.append(text)
             except Exception as e:
-                logger.info(f"Failed to process image {i} ({src}): {e}")
+                logger.info("Failed to process image %s (%s): %s", i, src, e)
         return "".join(res)
 
     @staticmethod
@@ -158,7 +163,7 @@ class HtmlParser:
             return image_text_str.strip()
         except Exception as e:
             logger.warning(
-                f"Failed to extract text from images using BeautifulSoup: {e}"
+                "Failed to extract text from images using BeautifulSoup: %s", e
             )
             return None
 
@@ -168,7 +173,7 @@ class HtmlParser:
             content = self._manually_fetch_blog_html_content()
             return content if content else None
         except Exception as e:
-            logger.warning(f"Failed to extract blog content using BeautifulSoup: {e}")
+            logger.warning("Failed to extract blog content using BeautifulSoup: %s", e)
         return None
 
     def get_textual_content(self) -> Optional[str]:

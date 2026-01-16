@@ -50,7 +50,7 @@ class KeywordsAgent(BaseAgent):
 
         keywords = context.get("keywords", [])
 
-        logger.info(f"Keywords agent analyzing content ({len(content)} chars)")
+        logger.info("Keywords agent analyzing content (%s chars)", len(content))
 
         try:
             found_keywords = find_keywords_tool(content, keywords)
@@ -59,11 +59,11 @@ class KeywordsAgent(BaseAgent):
                 logger.warning("No keywords found in content")
                 return []
 
-            logger.info(f"Found {len(found_keywords)} keywords")
+            logger.info("Found %s keywords", len(found_keywords))
             return found_keywords
 
         except Exception as e:
-            logger.error(f"Keyword identification failed: {str(e)}")
+            logger.error("Keyword identification failed: %s", str(e))
             raise
 
 

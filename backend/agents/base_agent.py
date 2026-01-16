@@ -37,7 +37,7 @@ class BaseAgent(ABC):
         self.goal = goal
         self.backstory = backstory
         self.verbose = verbose
-        logger.info(f"Agent '{self.name}' initialized successfully")
+        logger.info("Agent '%s' initialized successfully", self.name)
 
     def execute(
         self, task_description: str, context: Dict[str, Any], max_retries: int = 3
@@ -55,7 +55,7 @@ class BaseAgent(ABC):
         Raises:
             Exception: If task execution fails after all retries
         """
-        logger.info(f"Agent '{self.name}' starting task: {task_description}")
+        logger.info("Agent '%s' starting task: %s", self.name, task_description)
 
         for attempt in range(max_retries):
             try:
@@ -64,23 +64,26 @@ class BaseAgent(ABC):
                 execution_time = time.time() - start_time
 
                 logger.info(
-                    f"Agent '{self.name}' completed successfully in {execution_time:.2f}s"
+                    "Agent '%s' completed successfully in %.2fs",
+                    self.name, execution_time
                 )
                 return result
 
             except Exception as e:
                 logger.error(
-                    f"Agent '{self.name}' failed (attempt {attempt + 1}/{max_retries}): {str(e)}"
+                    "Agent '%s' failed (attempt %s/%s): %s",
+                    self.name, attempt + 1, max_retries, str(e)
                 )
 
                 if attempt < max_retries - 1:
                     # Exponential backoff
                     wait_time = 2**attempt
-                    logger.info(f"Retrying in {wait_time}s...")
+                    logger.info("Retrying in %ss...", wait_time)
                     time.sleep(wait_time)
                 else:
                     logger.error(
-                        f"Agent '{self.name}' failed after {max_retries} attempts"
+                        "Agent '%s' failed after %s attempts",
+                        self.name, max_retries
                     )
                     raise
 
@@ -95,7 +98,7 @@ class BaseAgent(ABC):
         Returns:
             Execution result
         """
-        pass
+        ...
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}(name='{self.name}', role='{self.role}')>"

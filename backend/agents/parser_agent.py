@@ -49,7 +49,7 @@ class ParserAgent(BaseAgent):
         if not url:
             raise ValueError("URL is required for parsing")
 
-        logger.info(f"Parser agent processing URL: {url}")
+        logger.info("Parser agent processing URL: %s", url)
 
         # Decide which parser to use based on configuration
         use_crawl4ai = (
@@ -68,11 +68,11 @@ class ParserAgent(BaseAgent):
             if not content:
                 raise ValueError("Parser returned empty content")
 
-            logger.info(f"Successfully extracted {len(content)} characters")
+            logger.info("Successfully extracted %s characters", len(content))
             return content
 
         except Exception as e:
-            logger.error(f"Parsing failed: {str(e)}")
+            logger.error("Parsing failed: %s", str(e))
             raise
 
 

@@ -18,7 +18,7 @@ def _get_base_llm_settings(model_name: str) -> Dict:
             "base_url": os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
             "model": model_name,
         }
-    elif EMBEDDINGS_PROVIDER == EmbeddingsProviderType.WATSONX:
+    if EMBEDDINGS_PROVIDER == EmbeddingsProviderType.WATSONX:
         config = {
             "model_id": model_name,
             "url": os.getenv(
@@ -45,7 +45,7 @@ def get_embeddings_client() -> Any:
         from langchain_ollama import OllamaEmbeddings
 
         return OllamaEmbeddings(**_get_base_llm_settings(model_name=model_name))
-    elif EMBEDDINGS_PROVIDER == EmbeddingsProviderType.WATSONX:
+    if EMBEDDINGS_PROVIDER == EmbeddingsProviderType.WATSONX:
         model_name = os.getenv(
             "EMBEDDINGS_MODEL_NAME", "ibm/granite-embedding-107m-multilingual"
         )

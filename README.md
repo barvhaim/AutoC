@@ -4,6 +4,81 @@
 
 **AutoC** is an automated tool designed to extract and analyze Indicators of Compromise (IoCs) from open-source threat intelligence sources.
 
+## **Architecture**
+
+AutoC features a hybrid multi-agent architecture that combines LangGraph workflow orchestration with specialized intelligent agents for optimal performance.
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          AutoC System Architecture                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+                                    ┌─────────┐
+                                    │  User   │
+                                    │ Input   │
+                                    │  (URL)  │
+                                    └────┬────┘
+                                         │
+                    ┌────────────────────▼────────────────────┐
+                    │      LangGraph Orchestration Layer       │
+                    │     (Workflow & State Management)        │
+                    └────────────────────┬────────────────────┘
+                                         │
+                    ┌────────────────────▼────────────────────┐
+                    │         Phase 1: Sequential              │
+                    │      ┌──────────────────────┐           │
+                    │      │   Parser Agent       │           │
+                    │      │  (Content Extract)   │           │
+                    │      └──────────┬───────────┘           │
+                    └─────────────────┼─────────────────────────┘
+                                      │
+                    ┌─────────────────▼─────────────────────┐
+                    │      Phase 2: Parallel Execution       │
+                    │   (ThreadPoolExecutor - 3 Workers)     │
+                    │                                        │
+                    │  ┌──────────┐  ┌──────────┐  ┌──────┐│
+                    │  │ Keywords │  │   IOC    │  │ QnA  ││
+                    │  │  Agent   │  │  Hunter  │  │Agent ││
+                    │  │          │  │  Agent   │  │      ││
+                    │  └────┬─────┘  └────┬─────┘  └───┬──┘│
+                    └───────┼─────────────┼────────────┼────┘
+                            │             │            │
+                            └─────────────┼────────────┘
+                                          │
+                    ┌─────────────────────▼─────────────────────┐
+                    │         Phase 3: Sequential                │
+                    │                                            │
+                    │      ┌──────────────────────┐             │
+                    │      │  Enrichment Agent    │             │
+                    │      │  (VirusTotal API)    │             │
+                    │      └──────────┬───────────┘             │
+                    │                 │                          │
+                    │      ┌──────────▼───────────┐             │
+                    │      │    MITRE Agent       │             │
+                    │      │  (ATT&CK TTPs)       │             │
+                    │      └──────────┬───────────┘             │
+                    └─────────────────┼─────────────────────────┘
+                                      │
+                    ┌─────────────────▼─────────────────────┐
+                    │         Analysis Results               │
+                    │  • Extracted Content                   │
+                    │  • Security Keywords                   │
+                    │  • IOCs (IPs, Domains, Hashes, etc.)  │
+                    │  • Enriched Threat Intelligence        │
+                    │  • Q&A Responses                       │
+                    │  • MITRE ATT&CK TTPs                   │
+                    └────────────────────────────────────────┘
+```
+
+**Key Benefits:**
+- 🚀 **40% Performance Improvement** through parallel execution
+- 🤖 **6 Specialized Agents** for modular task handling
+- 🔄 **Hybrid Architecture** combining sequential and parallel processing
+- 🛡️ **Enhanced Reliability** with automatic retry logic
+- 📊 **Better Monitoring** with detailed agent-level logging
+
+For detailed architecture information, see [Multi-Agent Architecture](docs/MULTI-AGENT-ARCHITECTURE.md).
+
 ## **Features**
 
 - **Threat Intelligence Parsing**: Parses blogs, reports, and feeds from various OSINT sources.

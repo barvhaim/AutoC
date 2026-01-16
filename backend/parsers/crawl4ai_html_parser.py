@@ -33,7 +33,7 @@ class Crawl4AiHtmlParser:
             parsed_url = urlparse(url)
             return parsed_url.netloc
         except Exception as e:
-            logger.warning(f"Failed to extract domain from url '{url}': {e}")
+            logger.warning("Failed to extract domain from url '%s': %s", url, e)
             return None
 
     @staticmethod
@@ -113,7 +113,7 @@ class Crawl4AiHtmlParser:
             success = output.get("success", False)
             if not success:
                 logger.warning(
-                    f"Failed to extract blog content using crawl4ai: {output}"
+                    "Failed to extract blog content using crawl4ai: %s", output
                 )
                 return None
 
@@ -125,7 +125,7 @@ class Crawl4AiHtmlParser:
             result = results[0]
             if not result.get("success"):
                 logger.warning(
-                    f"Failed to extract blog content using crawl4ai: {result}"
+                    "Failed to extract blog content using crawl4ai: %s", result
                 )
                 return None
 
@@ -137,7 +137,7 @@ class Crawl4AiHtmlParser:
             return self._extract_article_content_from_markdown(markdown)
 
         except Exception as e:
-            logger.warning(f"Failed to extract blog content using crawl4ai: {e}")
+            logger.warning("Failed to extract blog content using crawl4ai: %s", e)
             return None
 
 

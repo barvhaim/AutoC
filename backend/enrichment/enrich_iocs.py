@@ -32,8 +32,7 @@ class EnrichIOCs:
             return IOCType.SHA256
         if is_md5(ioc_val):
             return IOCType.MD5
-        else:
-            return None
+        return None
 
     def enrich_iocs(self) -> List[IOC]:
         enriched_iocs = []
@@ -42,7 +41,7 @@ class EnrichIOCs:
                 ioc_actual_type = self._detect_actual_ioc_type(ioc_val=ioc.value)
                 if not ioc_actual_type:  # ioc should be SHA256 or MD5
                     continue
-                elif ioc_actual_type == IOCType.SHA256:
+                if ioc_actual_type == IOCType.SHA256:
                     enriched_iocs.append(IOC(type=ioc_actual_type, value=ioc.value))
                 elif ioc_actual_type == IOCType.MD5:
                     new_ioc = IOC(type=ioc_actual_type, value=ioc.value)

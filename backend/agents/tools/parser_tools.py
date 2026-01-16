@@ -23,14 +23,14 @@ def docling_parser_tool(url: str) -> str:
         Clean textual content extracted from the page
     """
     try:
-        logger.info(f"Extracting content from {url} using Docling")
+        logger.info("Extracting content from %s using Docling", url)
         use_ocr = os.getenv("ANALYZE_BLOG_IMAGES", "false").lower() == "true"
         parser = HtmlParser(url=url, use_ocr=use_ocr)
         content = parser.get_textual_content()
-        logger.info(f"Successfully extracted {len(content)} characters")
+        logger.info("Successfully extracted %s characters", len(content))
         return content
     except Exception as e:
-        logger.error(f"Docling parser failed: {str(e)}")
+        logger.error("Docling parser failed: %s", str(e))
         raise
 
 
@@ -48,14 +48,14 @@ def crawl4ai_parser_tool(url: str) -> str:
         Clean textual content extracted from the page
     """
     try:
-        logger.info(f"Extracting content from {url} using Crawl4AI")
+        logger.info("Extracting content from %s using Crawl4AI", url)
         use_ocr = os.getenv("ANALYZE_BLOG_IMAGES", "false").lower() == "true"
         parser = Crawl4AiHtmlParser(url=url, use_ocr=use_ocr)
         content = parser.get_textual_content()
-        logger.info(f"Successfully extracted {len(content)} characters")
+        logger.info("Successfully extracted %s characters", len(content))
         return content
     except Exception as e:
-        logger.error(f"Crawl4AI parser failed: {str(e)}")
+        logger.error("Crawl4AI parser failed: %s", str(e))
         raise
 
 

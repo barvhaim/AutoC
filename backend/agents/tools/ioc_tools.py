@@ -29,17 +29,17 @@ def extract_iocs_tool(content: str) -> List[Dict[str, str]]:
         Example: [{"type": "IPv4", "value": "192.168.1.1"}, ...]
     """
     try:
-        logger.info(f"Extracting IOCs from content ({len(content)} chars)")
+        logger.info("Extracting IOCs from content (%s chars)", len(content))
         extractor = IOCsExtractor(article_content=content)
         iocs = extractor.extract_iocs_from_text()
 
         # Convert IOC objects to dictionaries
         ioc_dicts = [{"type": ioc.type.name, "value": ioc.value} for ioc in iocs]
 
-        logger.info(f"Extracted {len(ioc_dicts)} IOCs")
+        logger.info("Extracted %s IOCs", len(ioc_dicts))
         return ioc_dicts
     except Exception as e:
-        logger.error(f"IOC extraction failed: {str(e)}")
+        logger.error("IOC extraction failed: %s", str(e))
         raise
 
 

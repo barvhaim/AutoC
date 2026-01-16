@@ -24,13 +24,13 @@ def find_keywords_tool(content: str, keywords: Optional[List[str]] = None) -> Li
         List of keywords found in the content
     """
     try:
-        logger.info(f"Searching for keywords in content ({len(content)} chars)")
+        logger.info("Searching for keywords in content (%s chars)", len(content))
         extractor = KeywordsExtractor(article_content=content, keywords=keywords or [])
         found_keywords = extractor.find_keywords_in_text()
-        logger.info(f"Found {len(found_keywords)} keywords")
+        logger.info("Found %s keywords", len(found_keywords))
         return found_keywords
     except Exception as e:
-        logger.error(f"Keywords extraction failed: {str(e)}")
+        logger.error("Keywords extraction failed: %s", str(e))
         raise
 
 

@@ -65,8 +65,8 @@ class QnAAgent(BaseAgent):
             return []
 
         logger.info(
-            f"QnA agent processing {len(questions)} questions "
-            f"(batch_mode={batch_mode}, rag_mode={rag_mode})"
+            "QnA agent processing %s questions (batch_mode=%s, rag_mode=%s)",
+            len(questions), batch_mode, rag_mode
         )
 
         try:
@@ -81,20 +81,21 @@ class QnAAgent(BaseAgent):
                 logger.warning("No Q&A results returned")
                 return []
 
-            logger.info(f"Successfully answered {len(qna_results)} questions")
+            logger.info("Successfully answered %s questions", len(qna_results))
 
             # Log sample Q&A for debugging
             if qna_results and logger.isEnabledFor(logging.DEBUG):
                 sample = qna_results[0]
                 logger.debug(
-                    f"Sample Q&A - Q: {sample.get('question', 'N/A')[:50]}... "
-                    f"A: {sample.get('answer', 'N/A')[:50]}..."
+                    "Sample Q&A - Q: %s... A: %s...",
+                    sample.get('question', 'N/A')[:50],
+                    sample.get('answer', 'N/A')[:50]
                 )
 
             return qna_results
 
         except Exception as e:
-            logger.error(f"Q&A processing failed: {str(e)}")
+            logger.error("Q&A processing failed: %s", str(e))
             raise
 
 

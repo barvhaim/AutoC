@@ -57,8 +57,8 @@ class MITREAgent(BaseAgent):
         top_k = context.get("top_k", 3)
 
         logger.info(
-            f"MITRE agent classifying content "
-            f"(top_k={top_k}, with_qna={len(qna) > 0})"
+            "MITRE agent classifying content (top_k=%s, with_qna=%s)",
+            top_k, len(qna) > 0
         )
 
         try:
@@ -74,19 +74,19 @@ class MITREAgent(BaseAgent):
                 logger.warning("No MITRE TTPs classified")
                 return []
 
-            logger.info(f"Classified {len(mitre_ttps)} MITRE TTPs")
+            logger.info("Classified %s MITRE TTPs", len(mitre_ttps))
 
             # Log classified techniques for debugging
             if logger.isEnabledFor(logging.DEBUG):
                 for ttp in mitre_ttps[:3]:  # Log first 3
                     technique_id = ttp.get("technique_id", "Unknown")
                     technique_name = ttp.get("technique_name", "Unknown")
-                    logger.debug(f"Classified TTP: {technique_id} - {technique_name}")
+                    logger.debug("Classified TTP: %s - %s", technique_id, technique_name)
 
             return mitre_ttps
 
         except Exception as e:
-            logger.error(f"MITRE classification failed: {str(e)}")
+            logger.error("MITRE classification failed: %s", str(e))
             raise
 
 

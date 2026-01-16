@@ -32,7 +32,7 @@ class IOCsExtractor:
             model_parameters={
                 "decoding_method": "sample",
                 "temperature": 0,
-                "max_tokens": 1024,
+                "max_tokens": 4096,
             },
         )
 
@@ -40,7 +40,9 @@ class IOCsExtractor:
     def _json_escaping(response: AIMessage) -> AIMessage:
         """Clean and prepare LLM response for JSON parsing"""
         content = response.content
-        original_content = content  # Keep for debugging
+
+        # Log the raw response for debugging
+        logger.info("Raw LLM response (first 500 chars): %s", content[:500])
 
         # Remove markdown code blocks if present
         if content.startswith("```"):
@@ -55,11 +57,13 @@ class IOCsExtractor:
         # Strip whitespace
         content = content.strip()
 
+        # Handle empty responses - convert to empty JSON array
+        if not content or content == "":
+            logger.info("Empty LLM response, converting to empty array []")
+            content = "[]"
+
         # Log the cleaned content for debugging
-        if content != original_content:
-            logger.debug(
-                f"Cleaned LLM response from:\n{original_content[:200]}...\nto:\n{content[:200]}..."
-            )
+        logger.info("Cleaned LLM response (first 500 chars): %s", content[:500])
 
         # Handle escaped backslashes
         content = content.replace("\\", "\\\\")
@@ -85,13 +89,18 @@ class IOCsExtractor:
 
         prompt = ChatPromptTemplate.from_messages(messages=messages)
 
-        return (
-            prompt
-            | llm
-            | self._json_escaping
-            | JsonOutputParser()
-            | (lambda x: self._response_to_iocs(x, ioc_type))
-        )
+        def safe_parse_and_convert(response):
+            """Safely parse JSON and convert to IOCs with error logging"""
+            try:
+                parsed = JsonOutputParser().parse(response.content)
+                return self._response_to_iocs(parsed, ioc_type)
+            except Exception as e:
+                logger.error("Failed to parse JSON for %s", ioc_type.value)
+                logger.error("Raw response content: %s", response.content)
+                logger.error("Error: %s", str(e))
+                raise
+
+        return prompt | llm | self._json_escaping | safe_parse_and_convert
 
     def extract_iocs_from_text(self) -> List[IOC]:
         iocs, val_l = [], []

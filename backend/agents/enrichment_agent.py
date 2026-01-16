@@ -56,7 +56,7 @@ class EnrichmentAgent(BaseAgent):
         if not isinstance(iocs, list):
             raise ValueError("IOCs must be a list")
 
-        logger.info(f"Enrichment agent processing {len(iocs)} IOCs")
+        logger.info("Enrichment agent processing %s IOCs", len(iocs))
 
         try:
             enriched_iocs = enrich_iocs_tool(iocs)
@@ -71,15 +71,15 @@ class EnrichmentAgent(BaseAgent):
 
             if enriched_count < original_count:
                 logger.warning(
-                    f"Some IOCs were filtered during enrichment "
-                    f"({original_count} -> {enriched_count})"
+                    "Some IOCs were filtered during enrichment (%s -> %s)",
+                    original_count, enriched_count
                 )
 
-            logger.info(f"Successfully enriched {enriched_count} IOCs")
+            logger.info("Successfully enriched %s IOCs", enriched_count)
             return enriched_iocs
 
         except Exception as e:
-            logger.error(f"IOC enrichment failed: {str(e)}")
+            logger.error("IOC enrichment failed: %s", str(e))
             # Return original IOCs if enrichment fails
             logger.warning("Returning original IOCs without enrichment")
             return iocs

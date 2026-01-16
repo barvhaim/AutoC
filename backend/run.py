@@ -50,7 +50,7 @@ def run(
     res = graph.invoke(input=inputs)
 
     if res.get("error"):
-        logger.error("Error: %s", res.get('error'))
+        logger.error("Error: %s", res.get("error"))
         raise Exception(res.get("error"))
 
     article = res.get("article_textual_content")
@@ -71,7 +71,17 @@ def run(
         "keywords_found": keywords_found,
         "qna": qna,
         "iocs_found": [
-            {"type": ioc.model_dump()["type"].name, "value": ioc.model_dump()["value"]}
+            # Handle both dict and Pydantic model formats
+            {
+                "type": (
+                    ioc["type"]
+                    if isinstance(ioc, dict)
+                    else ioc.model_dump()["type"].name
+                ),
+                "value": (
+                    ioc["value"] if isinstance(ioc, dict) else ioc.model_dump()["value"]
+                ),
+            }
             for ioc in iocs
         ],
         "mitre_ttps": mitre_ttps,
@@ -81,6 +91,6 @@ def run(
 if __name__ == "__main__":
     _url = "https://www.uperesia.com/how-trickbot-tricks-its-victims"
     _res = run(_url)
-    logger.info("🔍Keywords found: %s", _res.get('keywords_found'))
-    logger.info("📝 QnA: %s", _res.get('qna'))
-    logger.info("🔍Total IoCs found: %s", len(_res.get('iocs_found')))
+    logger.info("🔍Keywords found: %s", _res.get("keywords_found"))
+    logger.info("📝 QnA: %s", _res.get("qna"))
+    logger.info("🔍Total IoCs found: %s", len(_res.get("iocs_found")))

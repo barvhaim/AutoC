@@ -28,7 +28,7 @@ class AgentManager:
         self.agents: Dict[str, Any] = {}
         self.max_workers = max_workers or AgentConfig.MAX_WORKERS
         self.executor = ThreadPoolExecutor(max_workers=self.max_workers)
-        logger.info(f"AgentManager initialized with {self.max_workers} workers")
+        logger.info("AgentManager initialized with %s workers", self.max_workers)
 
     def register_agent(self, name: str, agent: Any):
         """Register an agent with the manager
@@ -38,10 +38,10 @@ class AgentManager:
             agent: Agent instance to register
         """
         if name in self.agents:
-            logger.warning(f"Agent '{name}' already registered, overwriting")
+            logger.warning("Agent '%s' already registered, overwriting", name)
 
         self.agents[name] = agent
-        logger.info(f"Registered agent: {name}")
+        logger.info("Registered agent: %s", name)
 
     def get_agent(self, name: str) -> Optional[Any]:
         """Get a registered agent by name
@@ -83,7 +83,7 @@ class AgentManager:
         agent = self.agents[agent_name]
         timeout = timeout or AgentConfig.get_timeout(agent_name)
 
-        logger.info(f"Executing agent '{agent_name}' with timeout {timeout}s")
+        logger.info("Executing agent '%s' with timeout %ss", agent_name, timeout)
 
         try:
             # Submit task with timeout
@@ -92,10 +92,10 @@ class AgentManager:
             return result
 
         except TimeoutError:
-            logger.error(f"Agent '{agent_name}' timed out after {timeout}s")
+            logger.error("Agent '%s' timed out after %ss", agent_name, timeout)
             raise
         except Exception as e:
-            logger.error(f"Agent '{agent_name}' execution failed: {str(e)}")
+            logger.error("Agent '%s' execution failed: %s", agent_name, str(e))
             raise
 
     def execute_parallel(
@@ -105,7 +105,8 @@ class AgentManager:
 
         Args:
             tasks: Dict mapping agent_name to (task_description, context) tuple
-            fail_fast: If True, stop on first failure; if False, continue and return None for failed tasks
+            fail_fast: If True, stop on first failure; if False, continue and
+                return None for failed tasks
 
         Returns:
             Dict mapping agent_name to result (or None if failed and fail_fast=False)
@@ -117,7 +118,7 @@ class AgentManager:
             logger.info("Parallel execution disabled, executing sequentially")
             return self._execute_sequential(tasks, fail_fast)
 
-        logger.info(f"Executing {len(tasks)} agents in parallel")
+        logger.info("Executing %s agents in parallel", len(tasks))
 
         futures = {}
         for agent_name, (task_desc, context) in tasks.items():
@@ -132,16 +133,15 @@ class AgentManager:
             agent_name = futures[future]
             try:
                 results[agent_name] = future.result()
-                logger.info(f"Agent '{agent_name}' completed successfully")
+                logger.info("Agent '%s' completed successfully", agent_name)
             except Exception as e:
-                logger.error(f"Agent '{agent_name}' failed: {str(e)}")
+                logger.error("Agent '%s' failed: %s", agent_name, str(e))
                 if fail_fast:
                     # Cancel remaining tasks
                     for f in futures:
                         f.cancel()
                     raise
-                else:
-                    results[agent_name] = None
+                results[agent_name] = None
 
         return results
 
@@ -179,11 +179,10 @@ class AgentManager:
             try:
                 results[agent_name] = self.execute_agent(agent_name, task_desc, context)
             except Exception as e:
-                logger.error(f"Agent '{agent_name}' failed: {str(e)}")
+                logger.error("Agent '%s' failed: %s", agent_name, str(e))
                 if fail_fast:
                     raise
-                else:
-                    results[agent_name] = None
+                results[agent_name] = None
 
         return results
 

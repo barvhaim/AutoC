@@ -33,8 +33,8 @@ def answer_questions_tool(
     """
     try:
         logger.info(
-            f"Answering {len(questions)} questions "
-            f"(batch_mode={batch_mode}, rag_mode={rag_mode})"
+            "Answering %s questions (batch_mode=%s, rag_mode=%s)",
+            len(questions), batch_mode, rag_mode
         )
 
         extractor = QnaExtractor(
@@ -50,11 +50,11 @@ def answer_questions_tool(
             logger.warning("No Q&A results returned")
             return []
 
-        logger.info(f"Successfully answered {len(qna_results)} questions")
+        logger.info("Successfully answered %s questions", len(qna_results))
         return qna_results
 
     except Exception as e:
-        logger.error(f"Q&A extraction failed: {str(e)}")
+        logger.error("Q&A extraction failed: %s", str(e))
         raise
 
 

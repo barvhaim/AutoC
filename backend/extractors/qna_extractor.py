@@ -42,7 +42,8 @@ class QnaExtractor:
         # Warn if both batch and RAG modes are enabled
         if self.batch_mode and self.rag_mode:
             logger.warning(
-                "RAG mode is disabled when batch mode is enabled. Using full article content for batch processing."
+                "RAG mode is disabled when batch mode is enabled. "
+                "Using full article content for batch processing."
             )
 
         # Initialize RAG if needed (only when not in batch mode)
@@ -52,7 +53,7 @@ class QnaExtractor:
             self.rag = QnaRAG(article_content=self.article_content)
             self.article_hash = self.rag.index()
             logger.info(
-                f"Indexed article content with hash: {self.article_hash[:8]}..."
+                "Indexed article content with hash: %s...", self.article_hash[:8]
             )
 
     @staticmethod
@@ -70,7 +71,7 @@ class QnaExtractor:
             model_parameters={
                 "decoding_method": "sample",
                 "temperature": 0,
-                "max_tokens": 350,
+                "max_tokens": 1024,
             },
         )
 
@@ -81,11 +82,11 @@ class QnaExtractor:
             rag_results = self.rag.search(question, k=2, article_hash=self.article_hash)
             if rag_results:
                 context = "\n\n".join([result["text"] for result in rag_results])
-                logger.debug(f"Using RAG context for question: {question[:50]}...")
+                logger.debug("Using RAG context for question: %s...", question[:50])
             else:
                 context = self.article_content
                 logger.warning(
-                    f"No RAG results, using full article for: {question[:50]}..."
+                    "No RAG results, using full article for: %s...", question[:50]
                 )
         else:
             context = self.article_content
@@ -135,21 +136,21 @@ class QnaExtractor:
                     # Ensure we have the expected format
                     if isinstance(result, list):
                         return result
-                    else:
-                        # Fallback to individual mode if batch parsing fails
-                        logger.warning(
-                            "Batch mode failed, falling back to individual mode"
-                        )
-                        return self._individual_qna()
+                    # Fallback to individual mode if batch parsing fails
+                    logger.warning(
+                        "Batch mode failed, falling back to individual mode"
+                    )
+                    return self._individual_qna()
                 except Exception as e:
                     logger.warning(
-                        f"Batch mode failed with error {e}, falling back to individual mode"
+                        "Batch mode failed with error %s, falling back to individual mode",
+                        e,
                     )
                     return self._individual_qna()
             else:
                 return self._individual_qna()
         except Exception as e:
-            logger.error(f"Critical error in qna_over_article: {str(e)}")
+            logger.error("Critical error in qna_over_article: %s", str(e))
             return []
 
     def _individual_qna(self) -> List[Dict]:
@@ -170,5 +171,5 @@ class QnaExtractor:
                 )
             return qna
         except Exception as e:
-            logger.error(f"Error in individual QnA processing: {str(e)}")
+            logger.error("Error in individual QnA processing: %s", str(e))
             return []
