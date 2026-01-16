@@ -98,5 +98,3 @@ def test_ioc_classification_with_blog_article():
 
 if __name__ == "__main__":
     test_ioc_classification_with_blog_article()
-
-# Made with Bob

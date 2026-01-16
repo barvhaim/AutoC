@@ -57,6 +57,3 @@ def crawl4ai_parser_tool(url: str) -> str:
     except Exception as e:
         logger.error("Crawl4AI parser failed: %s", str(e))
         raise
-
-
-# Made with Bob

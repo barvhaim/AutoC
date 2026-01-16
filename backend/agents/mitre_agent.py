@@ -91,6 +91,3 @@ class MITREAgent(BaseAgent):
         except Exception as e:
             logger.error("MITRE classification failed: %s", str(e))
             raise
-
-
-# Made with Bob

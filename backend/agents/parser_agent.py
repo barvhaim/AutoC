@@ -74,6 +74,3 @@ class ParserAgent(BaseAgent):
         except Exception as e:
             logger.error("Parsing failed: %s", str(e))
             raise
-
-
-# Made with Bob

@@ -213,6 +213,3 @@ class AgentManager:
 
     def __repr__(self) -> str:
         return f"<AgentManager(agents={len(self.agents)}, workers={self.max_workers})>"
-
-
-# Made with Bob

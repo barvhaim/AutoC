@@ -32,6 +32,3 @@ def find_keywords_tool(content: str, keywords: Optional[List[str]] = None) -> Li
     except Exception as e:
         logger.error("Keywords extraction failed: %s", str(e))
         raise
-
-
-# Made with Bob

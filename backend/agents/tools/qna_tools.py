@@ -58,6 +58,3 @@ def answer_questions_tool(
     except Exception as e:
         logger.error("Q&A extraction failed: %s", str(e))
         raise
-
-
-# Made with Bob

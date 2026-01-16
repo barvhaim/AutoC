@@ -2,7 +2,7 @@
 
 import logging
 import os
-from typing import Any, List
+from typing import Any, List, Optional, Tuple
 
 from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, HumanMessage
@@ -12,6 +12,7 @@ from langchain_core.runnables import RunnableParallel, RunnableSequence
 from backend.prompts import get_prompts
 from backend.llm import get_chat_llm_client
 from backend.data_model.ioc import IOC, IOCType
+from backend.data_model.extraction_metrics import ExtractionMetrics
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -62,9 +63,30 @@ Typically starts with 1, 3, or bc1""",
 - bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq""",
     }
 
-    def __init__(self, article_content: str):
+    def __init__(self, article_content: str, use_hybrid: Optional[bool] = None):
+        """Initialize IOC extractor.
+
+        Args:
+            article_content: The text content to extract IOCs from
+            use_hybrid: Whether to use hybrid extraction (regex + LLM).
+                       If None, reads from HYBRID_IOC_EXTRACTION env var.
+                       Defaults to True if env var not set.
+        """
         self.article_content = article_content
         self.prompts = get_prompts()
+
+        # Determine if hybrid mode should be used
+        if use_hybrid is None:
+            use_hybrid = os.getenv("HYBRID_IOC_EXTRACTION", "true").lower() == "true"
+
+        self.use_hybrid = use_hybrid
+        self._hybrid_extractor = None
+        self._last_metrics: Optional[ExtractionMetrics] = None
+
+        if self.use_hybrid:
+            logger.info("🚀 Using hybrid IOC extraction (regex + LLM)")
+        else:
+            logger.info("🤖 Using LLM-only IOC extraction")
 
     @staticmethod
     def _llm() -> Any:
@@ -154,6 +176,49 @@ Typically starts with 1, 3, or bc1""",
         return prompt | llm | self._json_escaping | safe_parse_and_convert
 
     def extract_iocs_from_text(self) -> List[IOC]:
+        """Extract IOCs using either hybrid or LLM-only mode.
+
+        Returns:
+            List of IOC objects with type and value
+        """
+        if self.use_hybrid:
+            return self._extract_hybrid()
+        else:
+            return self._extract_llm_only()
+
+    def _extract_hybrid(self) -> List[IOC]:
+        """Extract IOCs using hybrid approach (regex + LLM validation)."""
+        try:
+            # Lazy import to avoid circular dependencies
+            from backend.extractors.hybrid_ioc_extractor import HybridIOCExtractor
+
+            if self._hybrid_extractor is None:
+                self._hybrid_extractor = HybridIOCExtractor()
+
+            iocs, metrics = self._hybrid_extractor.extract(self.article_content)
+            self._last_metrics = metrics
+
+            # Log performance metrics
+            logger.info(
+                "✅ Hybrid extraction complete: %d IOCs, %.2fs",
+                len(iocs),
+                (
+                    metrics.total_time_ms / 1000
+                    if hasattr(metrics, "total_time_ms")
+                    else 0.0
+                ),
+            )
+
+            return iocs
+
+        except Exception as e:
+            logger.error(
+                "Hybrid extraction failed, falling back to LLM-only: %s", str(e)
+            )
+            return self._extract_llm_only()
+
+    def _extract_llm_only(self) -> List[IOC]:
+        """Extract IOCs using LLM-only approach (original implementation)."""
         iocs, val_l = [], []
         tasks = {
             IOCType.URL.name: self._extract_ioc(IOCType.URL),
@@ -171,3 +236,11 @@ Typically starts with 1, 3, or bc1""",
                     iocs.append(ioc)
                     val_l.append(ioc.value)
         return iocs
+
+    def get_last_metrics(self) -> Optional[ExtractionMetrics]:
+        """Get metrics from the last extraction (hybrid mode only).
+
+        Returns:
+            ExtractionMetrics object if hybrid mode was used, None otherwise
+        """
+        return self._last_metrics

@@ -41,6 +41,3 @@ def build_agent_graph():
     flow.set_entry_point(HTML_EXTRACTOR_NODE)
 
     return flow.compile()
-
-
-# Made with Bob

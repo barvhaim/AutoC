@@ -34,13 +34,14 @@ def extract_iocs_tool(content: str) -> List[Dict[str, str]]:
         iocs = extractor.extract_iocs_from_text()
 
         # Convert IOC objects to dictionaries
-        ioc_dicts = [{"type": ioc.type.name, "value": ioc.value} for ioc in iocs]
+        # Handle both enum and string types for backward compatibility
+        ioc_dicts = []
+        for ioc in iocs:
+            ioc_type = ioc.type.name if hasattr(ioc.type, "name") else str(ioc.type)
+            ioc_dicts.append({"type": ioc_type, "value": ioc.value})
 
         logger.info("Extracted %s IOCs", len(ioc_dicts))
         return ioc_dicts
     except Exception as e:
         logger.error("IOC extraction failed: %s", str(e))
         raise
-
-
-# Made with Bob

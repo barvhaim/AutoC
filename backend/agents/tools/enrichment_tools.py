@@ -61,15 +61,14 @@ def enrich_iocs_tool(iocs: List[Dict[str, str]]) -> List[Dict[str, str]]:
         enriched = enricher.enrich_iocs()
 
         # Convert back to dictionaries
-        enriched_dicts = [
-            {"type": ioc.type.name, "value": ioc.value} for ioc in enriched
-        ]
+        enriched_dicts = []
+        for ioc in enriched:
+            # Handle both enum and string types
+            ioc_type = ioc.type.name if hasattr(ioc.type, "name") else str(ioc.type)
+            enriched_dicts.append({"type": ioc_type, "value": ioc.value})
 
         logger.info("Successfully enriched %d IOCs", len(enriched_dicts))
         return enriched_dicts
     except Exception as e:
         logger.error("IOC enrichment failed: %s", str(e))
         raise
-
-
-# Made with Bob

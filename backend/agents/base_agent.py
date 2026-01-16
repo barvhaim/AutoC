@@ -105,6 +105,3 @@ class BaseAgent(ABC):
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}(name='{self.name}', role='{self.role}')>"
-
-
-# Made with Bob

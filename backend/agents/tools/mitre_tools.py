@@ -61,6 +61,3 @@ def classify_mitre_ttps_tool(
     except Exception as e:
         logger.error("MITRE TTP classification failed: %s", str(e))
         raise
-
-
-# Made with Bob

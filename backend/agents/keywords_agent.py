@@ -65,6 +65,3 @@ class KeywordsAgent(BaseAgent):
         except Exception as e:
             logger.error("Keyword identification failed: %s", str(e))
             raise
-
-
-# Made with Bob

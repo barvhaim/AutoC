@@ -78,6 +78,3 @@ class IOCHunterAgent(BaseAgent):
         except Exception as e:
             logger.error("IOC extraction failed: %s", str(e))
             raise
-
-
-# Made with Bob

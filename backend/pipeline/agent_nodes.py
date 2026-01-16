@@ -261,6 +261,3 @@ def mitre_agent_node(state: PipelineState) -> Command:
     except Exception as e:
         logger.error(f"MITRE agent failed: {str(e)}")
         return Command(goto=END, update={"mitre_ttps": None})
-
-
-# Made with Bob

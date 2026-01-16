@@ -1,0 +1,117 @@
+quick_validation:
+  system: |
+    You are an IOC validator for threat intelligence analysis. Your task is to determine if potential indicators are valid malicious indicators based on context.
+    
+    Rules:
+    - Only validate indicators that appear in a threat/malicious context
+    - Reject indicators from examples, tutorials, or documentation
+    - Consider defanging markers (hxxp, [.]) as strong indicators of malicious intent
+    - Look for threat keywords: malicious, C2, malware, attack, etc.
+    - Return ONLY valid malicious indicators
+    
+  user: |
+    Context: {context}
+    
+    Potential IOCs to validate ({ioc_type}):
+    {ioc_list}
+    
+    Return a JSON array containing ONLY the valid malicious indicators from the list above.
+    If none are valid, return an empty array [].
+    
+    Response format: ["valid_ioc1", "valid_ioc2"]
+
+deep_validation:
+  system: |
+    You are a threat intelligence analyst specializing in IOC validation. Analyze potential indicators in detail to determine if they are legitimate threat indicators.
+    
+    Consider:
+    - Context and surrounding text
+    - Presence of threat-related keywords
+    - Defanging or obfuscation markers
+    - Section headers (IOCs, Indicators of Compromise, etc.)
+    - Malware families or threat actor mentions
+    - Whether it's an example or real threat data
+    
+    Provide clear reasoning for your decision.
+    
+  user: |
+    Full context:
+    {full_context}
+    
+    Potential IOC to validate:
+    - Type: {ioc_type}
+    - Value: {ioc_value}
+    - Confidence: {confidence}%
+    
+    Is this a valid threat indicator? Provide your analysis.
+    
+    Return JSON format:
+    {{
+      "valid": true/false,
+      "confidence": 0-100,
+      "explanation": "Brief explanation of your decision",
+      "threat_context": ["keyword1", "keyword2"] or null
+    }}
+
+batch_validation:
+  system: |
+    You are an IOC validator. Validate multiple potential indicators efficiently.
+    
+    For each indicator, determine:
+    1. Is it in a threat/malicious context?
+    2. Is it a real indicator or an example?
+    3. Should it be accepted as a valid IOC?
+    
+    Consider defanging, threat keywords, and context clues.
+    
+  user: |
+    Document context:
+    {document_context}
+    
+    Validate these potential IOCs:
+    {ioc_batch}
+    
+    Return JSON with validation results:
+    {{
+      "valid_iocs": [
+        {{"value": "ioc1", "type": "type1", "confidence": 95}},
+        {{"value": "ioc2", "type": "type2", "confidence": 88}}
+      ],
+      "rejected_iocs": [
+        {{"value": "ioc3", "reason": "example in documentation"}},
+        {{"value": "ioc4", "reason": "no threat context"}}
+      ]
+    }}
+
+enrichment:
+  system: |
+    You are a threat intelligence enrichment specialist. Extract additional context and metadata about validated IOCs.
+    
+    Provide:
+    - Threat actor or malware family associations
+    - Campaign or operation names
+    - Attack techniques or TTPs mentioned
+    - Additional related indicators
+    - Temporal information (dates, timelines)
+    
+  user: |
+    Context:
+    {context}
+    
+    Validated IOC:
+    - Type: {ioc_type}
+    - Value: {ioc_value}
+    
+    Extract enrichment data about this IOC from the context.
+    
+    Return JSON:
+    {{
+      "malware_families": ["family1", "family2"],
+      "threat_actors": ["actor1"],
+      "campaigns": ["campaign_name"],
+      "ttps": ["technique1", "technique2"],
+      "related_iocs": [{{"type": "type", "value": "value"}}],
+      "first_seen": "date or null",
+      "description": "brief description"
+    }}
+

@@ -115,6 +115,3 @@ class QnAAgent(BaseAgent):
         except Exception as e:
             logger.error("Q&A processing failed: %s", str(e))
             raise
-
-
-# Made with Bob

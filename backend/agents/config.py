@@ -49,6 +49,3 @@ class AgentConfig:
             "enrichment": cls.ENRICHMENT_TIMEOUT,
         }
         return timeouts.get(agent_name, cls.TIMEOUT_SECONDS)
-
-
-# Made with Bob

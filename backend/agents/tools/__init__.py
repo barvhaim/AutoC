@@ -16,5 +16,3 @@ __all__ = [
     "answer_questions_tool",
     "classify_mitre_ttps_tool",
 ]
-
-# Made with Bob
