@@ -22,38 +22,44 @@ class IOCsExtractor:
     # IOC type definitions for prompt generation
     # Maps IOCType enum to detailed extraction instructions
     IOC_DEFINITIONS = {
-        IOCType.URL: """<Domain or URL>
-Full or obfuscated web addresses (URLs, domains, or hostnames)
-Examples: https://example.com, hxxps://bad[.]com, malicious.net, evil[.]com
-MUST contain domain names or URL patterns
-MUST NOT be plain IP addresses (no 192.168.1.1 format)
-</Domain or URL>""",
-        IOCType.IP: """<IP Address>
-ONLY IPv4 or IPv6 addresses in numeric format
-Examples: 192.168.1.1, 10.0.0.1, 2001:0db8:85a3::8a2e:0370:7334
-MUST be numeric IP addresses only
-MUST NOT include URLs, domains, or hostnames
-</IP Address>""",
-        IOCType.MD5: """<MD5 Hash>
-ONLY 32-character hexadecimal hashes
+        IOCType.URL: """Domains, URLs, and hostnames (full or defanged/obfuscated).
+Include: hxxps://evil[.]com/path.js, malicious[.]net, bad.site, evil[.]com
+Exclude: Plain numeric IPs like 192.168.1.1""",
+        IOCType.IP: """IPv4 or IPv6 addresses in numeric format only.
+Include: 192.168.1.1, 10.0.0.1, 2001:0db8:85a3::8a2e:0370:7334
+Exclude: Domains, URLs, or hostnames""",
+        IOCType.MD5: """32-character hexadecimal MD5 hashes.
 Example: 5d41402abc4b2a76b9719d911017c592
-Must be exactly 32 hex characters (0-9, a-f)
-</MD5 Hash>""",
-        IOCType.SHA256: """<SHA256 Hash>
-ONLY 64-character hexadecimal hashes
+Must be exactly 32 hex characters (0-9, a-f)""",
+        IOCType.SHA256: """64-character hexadecimal SHA256 hashes.
 Example: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-Must be exactly 64 hex characters (0-9, a-f)
-</SHA256 Hash>""",
-        IOCType.CHROME_EXTENSION: """<Chrome Extension ID>
-ONLY Chrome extension IDs (32-character lowercase alphanumeric)
+Must be exactly 64 hex characters (0-9, a-f)""",
+        IOCType.CHROME_EXTENSION: """Chrome extension IDs (32-character lowercase alphanumeric).
 Example: cjpalhdlnbpafiamejdnhcphjbkeiagm
-Must be exactly 32 characters, lowercase letters and numbers only
-</Chrome Extension ID>""",
-        IOCType.BITCOIN_WALLET_ADDRESS: """<Bitcoin Wallet Address>
-ONLY Bitcoin wallet addresses (26-35 alphanumeric characters)
+Must be exactly 32 characters, lowercase letters and numbers only""",
+        IOCType.BITCOIN_WALLET_ADDRESS: """Bitcoin wallet addresses (26-35 alphanumeric characters).
 Example: 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
-Typically starts with 1, 3, or bc1
-</Bitcoin Wallet Address>""",
+Typically starts with 1, 3, or bc1""",
+    }
+
+    IOC_EXAMPLES = {
+        IOCType.URL: """- hxxps://malicious[.]com/path/file.js
+- evil[.]net
+- bad.site
+- hxxp://phishing[.]com""",
+        IOCType.IP: """- 192.168.1.1
+- 10.0.0.1
+- 172.16.0.1
+- 2001:0db8:85a3::8a2e:0370:7334""",
+        IOCType.MD5: """- 5d41402abc4b2a76b9719d911017c592
+- 098f6bcd4621d373cade4e832627b4f6""",
+        IOCType.SHA256: """- e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+- 2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae""",
+        IOCType.CHROME_EXTENSION: """- cjpalhdlnbpafiamejdnhcphjbkeiagm
+- nmmhkkegccagdldgiimedpiccmgmieda""",
+        IOCType.BITCOIN_WALLET_ADDRESS: """- 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+- 3J98t1WpEZ73CNmYviecrnyiWrnqRhWNLy
+- bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq""",
     }
 
     def __init__(self, article_content: str):
@@ -67,8 +73,7 @@ Typically starts with 1, 3, or bc1
         return get_chat_llm_client(
             model_name=model_name,
             model_parameters={
-                "decoding_method": "sample",
-                "temperature": 0,
+                "temperature": 0.1,
                 "max_tokens": 4096,
             },
         )
@@ -79,7 +84,7 @@ Typically starts with 1, 3, or bc1
         content = response.content
 
         # Log the raw response for debugging
-        logger.info("Raw LLM response (first 500 chars): %s", content[:500])
+        logger.info("LLM response (first 500 chars): %s", content[:500])
 
         # Remove markdown code blocks if present
         if content.startswith("```"):
@@ -99,9 +104,6 @@ Typically starts with 1, 3, or bc1
             logger.info("Empty LLM response, converting to empty array []")
             content = "[]"
 
-        # Log the cleaned content for debugging
-        logger.info("Cleaned LLM response (first 500 chars): %s", content[:500])
-
         # Handle escaped backslashes
         content = content.replace("\\", "\\\\")
 
@@ -114,21 +116,26 @@ Typically starts with 1, 3, or bc1
     def _extract_ioc(self, ioc_type: IOCType) -> RunnableSequence:
         llm = self._llm()
 
-        # Get the definition for this IOC type
+        # Get the definition and examples for this IOC type
         ioc_definition = self.IOC_DEFINITIONS.get(
             ioc_type, f"Extract {ioc_type.value} indicators"
         )
+        ioc_examples = self.IOC_EXAMPLES.get(ioc_type, f"Examples of {ioc_type.value}")
 
         system_message = SystemMessagePromptTemplate.from_template(
             template=self.prompts["iocs"]["system"],
             partial_variables={
                 "ioc_type": ioc_type.value,
                 "ioc_definition": ioc_definition,
+                "examples": ioc_examples,
                 "context": self.article_content,
             },
         )
         # More explicit user message to reinforce JSON-only output
-        user_message = HumanMessage(content="Output the JSON array now:")
+        user_message = HumanMessage(
+            content=f"Now extract all {ioc_type.value} from the text above. "
+            f'Return a JSON array like this: ["indicator1", "indicator2"]'
+        )
         messages = [system_message, user_message]
 
         prompt = ChatPromptTemplate.from_messages(messages=messages)

@@ -1,31 +1,19 @@
 system: |
-  You are a cybersecurity analyst specializing in threat intelligence parsing.
+  Extract all {ioc_type} from the text.
 
-  Your task is to extract ONLY {ioc_type} indicators from the text below.
+  Definition: {ioc_definition}
 
-  CRITICAL: You must ONLY extract indicators that match the type "{ioc_type}". Do NOT include any other types.
+  Examples:
+  {examples}
 
-  <ioc_definition>
-    {ioc_definition}
-  </ioc_definition>
+  Rules:
+  - Extract ONLY {ioc_type}
+  - Keep defanging as-is (hxxp, [.], etc.)
+  - Include full URLs with paths
+  - Look in IOC/C&C sections
+  - Return valid JSON array only
 
-  <extraction_rules>
-    <rule>ONLY extract indicators that exactly match the type: {ioc_type}</rule>
-    <rule>STRICTLY follow the definition above - do not deviate</rule>
-    <rule>If extracting "IP Address", DO NOT include URLs or domains</rule>
-    <rule>If extracting "Domain or URL", DO NOT include plain IP addresses</rule>
-    <rule>DO NOT normalize or de-obfuscate - preserve exact format as written</rule>
-    <rule>Preserve defanging exactly (hxxp, hxxps, [.], [dot], etc.)</rule>
-    <rule>When in doubt, exclude the indicator rather than misclassify it</rule>
-  </extraction_rules>
+  Text:
+  {context}
 
-  <input_text>
-    {context}
-  </input_text>
-
-  You MUST respond with a valid JSON array containing ONLY {ioc_type} indicators:
-  ["<ioc_1>", "<ioc_2>", ...]
-
-  If no {ioc_type} indicators are found, return []
-
-  Your response must be valid JSON only, no markdown, no additional text.
+  Return JSON array of {ioc_type} found, or [] if none.

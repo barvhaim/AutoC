@@ -1,0 +1,231 @@
+ # Unveiling the latest banking trojan threats in LATAM
+
+## Authors
+
+Senior Threat Researcher
+
+In our most recent research in the Latin American (LATAM) region, we at IBM Security Lab have observed a surge in campaigns linked with malicious Chrome extensions. These campaigns primarily target Latin America, with a particular emphasis on its financial institutions.
+
+In this blog post, we’ll shed light on the group responsible for disseminating this campaign. We’ll delve into the method of web injects and Man in the Browser, and how Telegram is utilized to transmit data about the compromised machines and share more about the campaign.
+
+Malicious Chrome extensions pose a significant threat beyond mere annoyance. These sophisticated tools can perform various operations on a victim’s machine, such as gathering technical information from the compromised browser, capturing screenshots of active browsing tabs and accessing the browser’s clipboard to overwrite its contents. Additionally, they can inject malicious scripts into web pages, steal login credentials and cookies, track browsing history and redirect users to phishing sites. The versatility of these extensions makes them potent tools for cyber criminals, capable of executing a wide array of harmful activities with minimal detection.
+
+To ensure its persistence, the malware employs a flexible command and control (C2) system and adaptive configuration, often communicated via a Telegram channel. The ultimate objective of these malicious activities is to install a harmful browser plugin on the victim’s browser and use the Man in the Browser technique. This allows the attackers to illegally collect sensitive banking information, along with other relevant data such as compromised machine information and on-demand screenshots.
+
+## Who is CyberCartel?
+
+Since 2012, the cyber criminal group CyberCartel has been active in Latin America, recently emerging with a new threat. Instead of developing its own malware, CyberCartel uses Malware-as-a-Service from established malware families. Their latest variant targets Chromium-based browsers like Google Chrome, focusing on high-value entities such as government offices and financial institutions. They employ sophisticated techniques to avoid detection, maintain long-term access and inject phishing sites into legitimate sessions. Additionally, they trick users into downloading malicious files from domains resembling legitimate government or billing websites, such as facturacionmx[.]autos and facturacionmexico[.]net (factura in Spanish is bill).
+
+Industry newsletter
+
+### The latest tech news, backed by expert insights
+
+Stay up to date on the most important—and intriguing—industry trends on AI, automation, data and beyond with the Think newsletter. See the IBM Privacy Statement.
+
+### Thank you! You are subscribed.
+
+Your subscription will be delivered in English. You will find an unsubscribe link in every newsletter. You can manage your subscriptions or unsubscribe here. Refer to our IBM Privacy Statement for more information.
+
+## Are web injects still alive?
+
+Web-injects, a favored technique employed by various banking trojans, have been a persistent threat in the realm of cyberattacks. These malicious injections enable cyber criminals to manipulate data exchanges between users and web browsers, potentially compromising sensitive information. So, are web injects still alive? The answer is a resounding yes.
+
+The scale of threat activity is vast, affecting more than 40 banks across North America, South America, Europe and Japan. The intention of the web injection module is likely to compromise popular banking applications and, once the malware is installed, intercept the users’ credentials to then access and likely monetize their banking information.
+
+Web injects are back on the rise. They are powerful malicious tools integrated with multiple banking trojans that permit a threat actor to bypass two-factor authentication (2FA) and compromise a user’s bank account. The primary methods used by threat actors to distribute banking web injects are phishing and exploit kits.
+
+In our scenario, the method uses the same web injects technique as we mentioned in our last blog. But now, browser-based extensions are mimicking Google Drive extensions and can employ web injects to pilfer confidential data from the compromised system. Additionally, Telegram is also being utilized as a resource for updating Command and Control (C&amp;C) servers.
+
+Mixture of Experts | 16 January, episode 90
+
+### Decoding AI: Weekly News Roundup
+
+Join our world-class panel of engineers, researchers, product leaders and more as they cut through the AI noise to bring you the latest in AI news and insights.
+
+## Malicious Chrome extension campaign
+
+The first campaign related to the LATAM region is a generic malware that uses a malicious Chrome extension to inject it into the victim’s machine and steal sensitive information. In the past, we saw similarities in different malware. You can find more information here.
+
+Main Features Attack:
+
+TTP:
+
+- The Victim unknowingly visits a phishing website and downloads a file
+- The victim clicks on a file (fake pay tax document) not realizing it’s malicious
+- Their machine becomes infected with malware as a result
+- The malware proceeds to install a rogue extension on the user’s Chrome browser
+- Updates and configurations are disseminated via a Telegram channel by the threat actors
+- The Victim logs into their bank account, unaware of the lurking danger
+- The malicious extension includes an internal script designed to steal the user’s information
+- The stolen information is then sent to a Command and Control (C&amp;C) server
+
+## Malicious Chrome extension mimicking Google Drive
+
+In this section, we will focus on the malicious Chrome extension. Once the user is infected with the malware, the malware is added to the Chrome browser extension by the name of Google Drive (which is fake).
+
+(attached is the content of the malicious extension)
+
+### Manifest.json:
+
+The manifest.json file for a Chrome extension describes various properties and permissions required by the extension. Here’s the explanation of the permissions specified in this manifest file:
+
+- Scripting: Allows the extension to execute scripts on web pages
+- WebNavigation: Allows the extension to observe and react to navigation events within the browser
+- System.cpu: Grants access to information about the system’s CPU
+- System.display: Provides access to information about the system’s display
+- System.storage: Allows access to information about the system’s storage devices
+- System.memory: Grants access to information about the system’s memory
+- Management: Enables the extension to manage other extensions, apps and themes
+- Storage: Allows the extension to use the Chrome Storage API to store and retrieve data
+- Cookies: Provides access to read and modify cookies
+- Notifications: Grants the ability to display notifications to the user
+- Tabs: Allows the extension to interact with browser tabs, such as getting their information or creating new tabs
+- History: Grants access to the user’s browsing history
+- WebRequest: Allows the extension to observe and analyze web requests
+- DeclarativeNetRequest: Permits the use of declarative rules to block or modify network requests
+- Alarms: Allows the extension to schedule code to run at specific times or intervals
+- ClipboardRead: Grants the ability to read the content of the clipboard
+- ClipboardWrite: Allows the extension to write data to the clipboard
+- Windows: Grants access to interact with browser windows
+- UnlimitedStorage: Allows the extension to use an unlimited amount of storage
+
+These permissions allow the extension to perform a wide range of actions, from interacting with system resources to manipulating web content and user data. The extension appears to be quite powerful, with the ability to access and modify many aspects of the user’s browsing experience and system information.
+
+### Content Scripts:
+
+These are also malicious scripts that the extension runs on specific web pages. In this case, the extension can inject scripts on all websites to enhance or change the content:
+
+- Main script: The core script that runs on every page
+- Email scripts: Specific scripts that are injected into platforms such as Gmail, Hotmail and Yahoo Mail
+
+This is an example of a fake verification code from a bank:
+
+This script is designed to run on Gmail and modifies the content of emails related to banking withdrawals. It performs the following actions:
+
+- Check if the user is on Gmail
+- Defines the bank’s function:
+    - Finds and replaces specific text related to withdrawal requests
+    - Updates memo fields to show a message about authorizing a new device
+    - Extracts additional information from styled div elements
+
+### Background Scripts:
+
+The extension also runs a background script that operates behind the scenes, helping it manage tasks and stay responsive even when you’re not actively using it.
+
+### Network Request Rules:
+
+he extension has rules to manage network traffic, such as blocking certain types of content. These rules can be enabled or disabled as needed.
+
+### Config.js:
+
+It includes default settings for how the extension works. It sends a request to get the current domain of the command and control (C2) server.
+
+The code dynamically updates the application’s domain configuration based on the latest message from a specified Telegram chat. Using a configuration file, it either retrieves a default URL or fetches updates from Telegram if the “useTelegramPanel” option is enabled. This approach allows attackers to easily update the domain setting in real-time by simply sending a message in the Telegram chat, making the application more flexible and responsive to changes.
+
+### The Web-Injections Part:
+
+The malicious Chrome extension is used to inject malicious code on the victim’s side to steal sensitive information such as credit card, user, password and more.
+
+The first mechanism for the injection on the malicious Chrome extension is to fetch injection data which means it uses the domain and UUID, constructs a URL and sends a fetch request to retrieve JSON data related to the injections. It looks like this:
+
+Once the victim enters one of the targeted URLs mentioned in the screenshot, it will inject the value. Inside the value, more external JavaScript is injected from a different domain.
+
+Some of the values also use phishing/redirection:
+
+All the sensitive data is sent to the C&amp;C; here’s the login page for the C&amp;C:
+
+## Template builder sold on underground forums
+
+Our threat intelligence team researched and discovered a malicious Chrome extension builder being sold on underground forums. This builder provides fraudsters with pre-made templates for Chromium extensions and accompanying backend files, making it easier to deploy harmful extensions that can compromise users’ data and security. These extensions can be disguised as legitimate tools, tricking users into installing them and subsequently stealing sensitive information such as banking credentials and personal data. The ease of access to such sophisticated tools lowers the barrier for cyber criminals, leading to an increase in targeted attacks, especially in regions like LATAM where banking trojans are prevalent.
+
+From the screenshot, we see a topic about a Chromium Botnet Extension, with a user selling it and offering support once the fraudster purchases the kit. This indicates a well-organized marketplace where cyber criminals can easily obtain tools and assistance to launch malicious campaigns, further highlighting the sophisticated nature of underground cyber crime ecosystems.
+
+## Caiman malware campaign:
+
+Caiman malware is a banking trojan malware that has specifically targeted the LATAM region. This malware is designed to steal sensitive financial information from users by infecting their computer devices.
+
+The malware also uses the same technique to install malicious Chrome extension, not mimicking the Google Drive extension, but rather using the name “Chrome Notification”:
+
+But the extension injecting script redirects the victim to a phishing site that impersonates the targeted bank:
+
+Caiman Malware using AutoIT script to use the web inject technique:
+
+The screenshot shows an AutoIT script designed to check if the user is browsing bbvanet.com.mx/mexiconet. Upon detection, it injects an external JavaScript file located at hxxps://www.cssangular[.]com/jquery.js. The script uses the key variable to denote the current date and r to represent the bank URL encoded in base64. The primary objective of this malicious activity is to harvest as much sensitive information as possible, including account balances, usernames, passwords, screenshots and more.
+
+## OTPBypass/Figrabber attack
+
+In the latest research, we’ve observed new activity in the Colombia region, utilizing an ATS Engine injection panel to steal information. The primary objective of this injection is to carry out OTP (One-Time Password) bypass attacks, which are commonly used in phishing and other fraudulent activities.
+
+There are two main features of this web inject:
+
+### Communicate function:
+
+The communication function is responsible for sending data to the attacker’s server. It constructs a URL with various parameters and dynamically loads a script from the attacker’s server. Data sent to the C&amp;C (Command and Control) server includes:
+
+    - action=comunicate: Specifies the action to be performed
+    - login: The login credentials entered by the user
+    - password: The password entered by the user
+    - otp\_token: The OTP token entered by the user
+    - state: The current state (e.g., log-in or OTP submission)
+    - pkey, botid, bank: Additional identifiers used by the attacker
+    - ssid: A unique identifier based on the current timestamp
+
+### Deception of Victim:
+
+The attacker requests the OTP from the victim and then tricks the victim into believing that there are “technical difficulties.” Meanwhile, the OTP has been stolen and sent to the C&amp;C server. Additionally, the attacker also steals more information such as credit card numbers, CVV, ID, telephone numbers and more.
+
+The attacker is using a Full Info Grabber C&amp;C panel, referred to as OTPBypass:
+
+### IOC
+
+### Web injects:
+
+hxxps://facturacionmexico[.]net/ok[.]js
+
+hxxps://dlxfreights[.]site/mx/sbi/main[.]js
+
+hxxps://css.imagesccs[.]com/jquery.js
+
+hxxps:/www.cssangular[.]com/jquery.js
+
+hxxps:/www.angularcss[.]com/jquery.js
+
+### C&amp;C:
+
+hxxps://dlxfreights[.]site/uadmin/gate.php
+
+hxxps://facturacionmx[.]autos/api
+
+hxxps://facturamexico2023[.]com/api
+
+hxxps://russk22[.]icu
+
+hxxps://jogjaempatroda[.]com
+
+### Phishing/Redirect:
+
+hxxps://s2conexion[.]info/?s=2
+
+hxxps://s2conexion[.]info/?s=1
+
+hxxps://ww15[.]mxbbua[.]net/index.php
+
+hxxps://bbua[.]mxacceso-portal[.]com/ingreso\_opt.php
+
+hxxps://s1conexion[.]info/?s=12
+
+hxxps://www.citlibanamex[.]group
+
+hxxp://banamexunopaboti[.]run
+
+## How to stay safe from malicious Chrome extensions
+
+To protect against these malicious extensions, it’s important to be vigilant when installing any new browser extensions. Users should only download extensions from trusted sources and carefully review the permissions requested by the extension before installation. Additionally, they should use two-factor authentication and regularly update their browser and extensions.
+
+The rise of malicious Chrome extensions is a worrying trend that highlights the need for users to be vigilant when browsing the web.
+
+It is suspected this malware campaign may potentially spread to the North American and European regions.
+
+To learn how to authenticate customers, detect fraud and protect against malicious users across all channels, explore IBM Security Trusteer solutions.
+
+Link copied
