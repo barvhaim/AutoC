@@ -8,30 +8,30 @@ AutoC has been transformed into a hybrid multi-agent system that combines **Lang
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     LangGraph Orchestration Layer                │
-│                    (Workflow & State Management)                 │
+│                     LangGraph Orchestration Layer               │
+│                    (Workflow & State Management)                │
 └─────────────────────────────────────────────────────────────────┘
                                  │
                     ┌────────────┴────────────┐
                     │                         │
          ┌──────────▼──────────┐   ┌─────────▼──────────┐
-         │   Sequential Phase   │   │   Parallel Phase    │
-         │    (Phase 1 & 3)    │   │     (Phase 2)       │
+         │   Sequential Phase  │   │   Parallel Phase   │
+         │    (Phase 1 & 3)    │   │     (Phase 2)      │
          └──────────┬──────────┘   └─────────┬──────────┘
-                    │                         │
-    ┌───────────────┼─────────────────────────┼───────────────┐
-    │               │                         │               │
-┌───▼────┐   ┌─────▼──────┐   ┌──────────────▼─────────┐    │
-│ Parser │   │ Enrichment │   │  Parallel Execution     │    │
-│ Agent  │   │   Agent    │   │  (ThreadPoolExecutor)   │    │
-└────────┘   └────────────┘   └──────────┬──────────────┘    │
-                                          │                    │
+                    │                        │
+    ┌───────────────┼────────────────────────┼───────────────-┐
+    │               │                        │                │
+┌───▼────┐   ┌─────▼──────┐   ┌──────────────▼─────────┐      │
+│ Parser │   │ Enrichment │   │  Parallel Execution     │     │
+│ Agent  │   │   Agent    │   │  (ThreadPoolExecutor)   │     │
+└────────┘   └────────────┘   └──────────┬──────────────┘     │
+                                          │                   │
                           ┌───────────────┼────────────┐      │
                           │               │            │      │
-                    ┌─────▼──────┐ ┌─────▼─────┐ ┌───▼────┐ │
-                    │  Keywords  │ │    IOC    │ │  QnA   │ │
-                    │   Agent    │ │   Hunter  │ │ Agent  │ │
-                    └────────────┘ └───────────┘ └────────┘ │
+                    ┌─────▼──────┐ ┌─────▼─────┐ ┌───▼────┐   │
+                    │  Keywords  │ │    IOC    │ │  QnA   │   │
+                    │   Agent    │ │   Hunter  │ │ Agent  │   │
+                    └────────────┘ └───────────┘ └────────┘   │
                                                               │
                                           ┌───────────────────┘
                                           │
@@ -249,42 +249,3 @@ INFO:backend.agents.base_agent:Retrying in 2s...
 | **Scalability** | Limited | High (parallel execution) |
 | **Maintainability** | Moderate | High (separation of concerns) |
 | **Testing** | Integration-focused | Unit + Integration |
-
-## Future Enhancements
-
-### Planned Features
-1. **Dynamic Agent Selection**: Choose agents based on content type
-2. **Agent Communication**: Direct agent-to-agent messaging
-3. **Adaptive Timeouts**: Adjust based on content size
-4. **Result Caching**: Cache agent results for similar content
-5. **Agent Metrics**: Detailed performance analytics
-6. **Custom Agents**: Plugin system for user-defined agents
-
-### Scalability Improvements
-1. **Distributed Execution**: Run agents on separate machines
-2. **Load Balancing**: Distribute work across agent instances
-3. **Queue-based Processing**: Async task queue for high volume
-4. **Resource Pooling**: Shared LLM connections
-
-## Migration Guide
-
-See [`docs/MIGRATION-GUIDE.md`](./MIGRATION-GUIDE.md) for detailed instructions on:
-- Migrating from traditional to agent-based pipeline
-- Customizing agent behavior
-- Creating new agents
-- Performance tuning
-
-## Testing
-
-See [`docs/TESTING-GUIDE.md`](./TESTING-GUIDE.md) for:
-- Unit testing individual agents
-- Integration testing workflows
-- Performance benchmarking
-- Load testing strategies
-
-## References
-
-- [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
-- [Hybrid Architecture Plan](./hybrid-multi-agent-plan.md)
-- [Implementation Status](./implementation-status.md)
-- [Quick Start Guide](./QUICKSTART-AGENTS.md)
