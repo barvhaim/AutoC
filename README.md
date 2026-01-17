@@ -4,6 +4,8 @@
 
 **AutoC** is an automated tool designed to extract and analyze Indicators of Compromise (IoCs) from open-source threat intelligence sources.
 
+<img width="800" alt="Image" src="https://github.com/user-attachments/assets/c81e9ccd-da5c-4e12-a701-11524a1f5609" />
+
 ## **Features**
 
 - **Threat Intelligence Parsing**: Parses blogs, reports, and feeds from various OSINT sources.
