@@ -1,4 +1,4 @@
-"""CrewAI tools for AutoC agents"""
+"""Tools for AutoC agents"""
 
 from backend.agents.tools.parser_tools import docling_parser_tool, crawl4ai_parser_tool
 from backend.agents.tools.keywords_tools import find_keywords_tool

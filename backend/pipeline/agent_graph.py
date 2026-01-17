@@ -1,4 +1,4 @@
-"""LangGraph workflow using CrewAI agents"""
+"""LangGraph workflow using agents"""
 
 from langgraph.graph import StateGraph
 from backend.pipeline.state import PipelineState
@@ -16,11 +16,11 @@ from backend.pipeline.node_types import (
 
 
 def build_agent_graph():
-    """Build LangGraph workflow with CrewAI agents
+    """Build LangGraph workflow with agents
 
     This creates a hybrid architecture that combines:
     - LangGraph for workflow orchestration
-    - CrewAI agents for intelligent task execution
+    - Agents for intelligent task execution
     - Parallel processing for independent tasks
 
     Workflow:

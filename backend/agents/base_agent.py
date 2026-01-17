@@ -15,9 +15,6 @@ class BaseAgent(ABC):
     - Task execution with error handling
     - Retry logic with exponential backoff
     - Logging and monitoring
-
-    Note: This is a simplified agent that directly calls tool functions
-    rather than using CrewAI's Agent class.
     """
 
     def __init__(

@@ -1,4 +1,4 @@
-"""LangGraph nodes that use CrewAI agents for execution"""
+"""LangGraph nodes that use agents for execution"""
 
 import os
 import logging
